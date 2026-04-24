@@ -1,0 +1,1312 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apex Trailing Drawdown Calculator — FuturesBanter</title>
+<meta name="description" content="Free Apex Trader Funding trailing drawdown calculator. See your threshold, cushion, and distance to the Safety Net in real time. Works for Intraday and EOD accounts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Neutral charcoal base — no blue tint, distinct from Apex's navy */
+    --bg: #0c0d10;
+    --bg-raised: #121418;
+    --surface: #16181d;
+    --surface-2: #1c1f25;
+    --surface-hover: #23262d;
+    --border: #23262c;
+    --border-strong: #31353d;
+    --border-accent: #444953;
+
+    --text: #edeef1;
+    --text-strong: #ffffff;
+    --text-muted: #9699a1;
+    --text-dim: #62666e;
+
+    /* Teal — distinctive, modern, not Apex's gold */
+    --accent: #14b8a6;
+    --accent-bright: #2dd4bf;
+    --accent-dim: #0d9488;
+    --accent-bg: rgba(20, 184, 166, 0.08);
+    --accent-ring: rgba(20, 184, 166, 0.22);
+    --accent-glow: rgba(20, 184, 166, 0.35);
+
+    /* Amber — reserved for "locked" state only */
+    --warn: #f59e0b;
+    --warn-bright: #fbbf24;
+    --warn-bg: rgba(245, 158, 11, 0.08);
+    --warn-ring: rgba(245, 158, 11, 0.25);
+
+    /* Rose — modern coral-red for danger */
+    --danger: #f43f5e;
+    --danger-bright: #fb7185;
+    --danger-bg: rgba(244, 63, 94, 0.08);
+    --danger-ring: rgba(244, 63, 94, 0.25);
+
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow: 0 4px 12px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.2);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse 50% 40% at 70% 0%, rgba(20, 184, 166, 0.05), transparent 70%),
+      radial-gradient(ellipse 40% 30% at 20% 100%, rgba(245, 158, 11, 0.03), transparent 70%),
+      var(--bg);
+    min-height: 100vh;
+    background-attachment: fixed;
+  }
+
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* ---------- Top nav / header ---------- */
+  .topnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    position: relative;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    display: grid;
+    place-items: center;
+  }
+  .brand-mark::before {
+    content: '';
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--accent);
+    border-right: 1.5px solid transparent;
+    border-bottom: 1.5px solid transparent;
+    border-radius: 2px;
+    transform: rotate(45deg) translate(1px, -1px);
+  }
+  .brand em { font-style: normal; color: var(--accent); font-weight: 600; }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .nav-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+
+  /* ---------- Header ---------- */
+  header {
+    margin-bottom: 56px;
+  }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding: 6px 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 999px;
+  }
+  .kicker-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(40px, 6vw, 66px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    margin: 0 0 18px;
+    color: var(--text-strong);
+    max-width: 900px;
+  }
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ---------- Layout ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 960px) {
+    .wrap { padding: 28px 18px 56px; }
+    .grid { grid-template-columns: 1fr; gap: 24px; }
+  }
+
+  /* ---------- Inputs card ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .inputs {
+    padding: 28px;
+    position: sticky;
+    top: 24px;
+  }
+  @media (max-width: 960px) {
+    .inputs { position: static; padding: 24px; }
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+  label .hint {
+    color: var(--text-dim);
+    font-weight: 400;
+    margin-left: 8px;
+    font-size: 12px;
+  }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .segmented button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 9px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.15s;
+  }
+  .segmented button:hover:not(.active) {
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+  .segmented button.active {
+    background: var(--surface-2);
+    color: var(--text-strong);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 0 0 1px var(--border-accent);
+  }
+
+  select, input[type="number"] {
+    width: 100%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 11px 14px;
+    transition: all 0.15s;
+  }
+  select:hover, input[type="number"]:hover {
+    border-color: var(--border-strong);
+  }
+  select:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%239699a1' stroke-width='1.5' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  .dollar-input { position: relative; }
+  .dollar-input::before {
+    content: '$';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .dollar-input input { padding-left: 28px; }
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  .divider { height: 1px; background: var(--border); margin: 22px -28px; }
+  @media (max-width: 960px) { .divider { margin: 20px -24px; } }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ---------- Results ---------- */
+  .results { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Status */
+  .status {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .status::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+  .status-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--accent);
+  }
+  .status .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .status .headline {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+  }
+  .status .desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-width: 540px;
+  }
+
+  .status[data-level="warning"]::before { background: var(--warn); }
+  .status[data-level="warning"] .status-icon {
+    background: var(--warn-bg);
+    border-color: var(--warn-ring);
+    color: var(--warn);
+  }
+
+  .status[data-level="danger"]::before { background: var(--danger); }
+  .status[data-level="danger"] .status-icon {
+    background: var(--danger-bg);
+    border-color: var(--danger-ring);
+    color: var(--danger);
+  }
+
+  .status[data-level="breached"]::before { background: var(--danger); }
+  .status[data-level="breached"] .status-icon {
+    background: var(--danger-bg);
+    border-color: var(--danger-ring);
+    color: var(--danger);
+  }
+  .status[data-level="breached"] { background: linear-gradient(90deg, var(--danger-bg), var(--surface) 60%); }
+
+  .status[data-level="locked"]::before { background: var(--warn); }
+  .status[data-level="locked"] .status-icon {
+    background: var(--warn-bg);
+    border-color: var(--warn-ring);
+    color: var(--warn);
+  }
+  .status[data-level="locked"] { background: linear-gradient(90deg, var(--warn-bg), var(--surface) 60%); }
+
+  /* Numbers row */
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 720px) { .numbers { grid-template-columns: 1fr; } }
+
+  .number {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    transition: border-color 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .number:hover { border-color: var(--border-strong); }
+  .number .lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .number .val {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.025em;
+    color: var(--text-strong);
+    line-height: 1;
+  }
+  .number .val .dollar {
+    color: var(--text-dim);
+    font-size: 21px;
+    font-weight: 500;
+    margin-right: 2px;
+  }
+  .number .sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 10px;
+  }
+  .number.positive .val { color: var(--accent-bright); }
+  .number.positive .val .dollar { color: var(--accent-dim); }
+  .number.negative .val { color: var(--danger-bright); }
+  .number.negative .val .dollar { color: var(--danger); opacity: 0.7; }
+  .number.locked .val { color: var(--warn); }
+
+  /* ---------- Vertical ladder ---------- */
+  .ladder-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    box-shadow: var(--shadow-sm);
+  }
+  .ladder-header {
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .ladder-header .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .ladder-header .title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+  }
+  .ladder-legend {
+    display: flex;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .ladder {
+    position: relative;
+    height: 420px;
+    margin: 0 8px;
+  }
+  @media (max-width: 600px) {
+    .ladder-card { padding: 24px 20px; }
+    .ladder { margin: 0; height: 400px; }
+  }
+
+  .ladder-axis {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border) 15%, var(--border) 85%, transparent);
+    transform: translateX(-50%);
+  }
+
+  .cushion-zone {
+    position: absolute;
+    left: calc(50% - 44px);
+    width: 88px;
+    background: linear-gradient(180deg, var(--accent-bg), rgba(20, 184, 166, 0.16));
+    border-radius: 4px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cushion-zone.breach {
+    background: linear-gradient(180deg, rgba(244, 63, 94, 0.18), var(--danger-bg));
+  }
+
+  .gain-zone {
+    position: absolute;
+    left: calc(50% - 44px);
+    width: 88px;
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.04));
+    border-radius: 4px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .rung {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 0;
+    transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .rung-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: var(--border-strong);
+  }
+  .rung-label-left, .rung-label-right {
+    position: absolute;
+    top: -10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    background: var(--surface);
+    padding: 0 8px;
+  }
+  .rung-label-left {
+    right: calc(50% + 14px);
+    text-align: right;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .rung-label-right {
+    left: calc(50% + 14px);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .rung.threshold .rung-line {
+    background: var(--danger);
+    height: 2px; top: -0.5px;
+    box-shadow: 0 0 8px var(--danger-ring);
+  }
+  .rung.threshold .rung-label-left { color: var(--danger-bright); }
+  .rung.threshold .rung-label-right { color: var(--danger-bright); }
+
+  .rung.current { z-index: 5; }
+  .rung.current .rung-line {
+    background: var(--text-strong);
+    height: 2px; top: -0.5px;
+    box-shadow: 0 0 0 4px var(--surface);
+  }
+  .rung.current .rung-label-left,
+  .rung.current .rung-label-right { color: var(--text-strong); font-weight: 700; }
+  .rung.current .rung-label-left { font-size: 11px; letter-spacing: 0.14em; }
+  .rung.current .rung-label-right { font-size: 13px; }
+  .rung.current::after {
+    content: '';
+    position: absolute;
+    left: calc(50% - 7px);
+    top: -7px;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--surface), 0 0 0 5px var(--accent-ring), 0 0 20px var(--accent-glow);
+  }
+
+  .rung.peak .rung-line {
+    background: transparent;
+    border-top: 1px dashed var(--accent-bright);
+  }
+  .rung.peak .rung-label-left { color: var(--accent-bright); }
+  .rung.peak .rung-label-right { color: var(--accent-bright); }
+
+  .rung.lock .rung-line {
+    background: var(--warn);
+    height: 2px; top: -0.5px;
+    box-shadow: 0 0 8px var(--warn-ring);
+  }
+  .rung.lock .rung-label-left { color: var(--warn); }
+  .rung.lock .rung-label-right { color: var(--warn); }
+
+  .rung.start .rung-line {
+    background: transparent;
+    border-top: 1px dotted var(--text-dim);
+  }
+
+  .annotation {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1.3;
+    white-space: nowrap;
+    transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .annotation .amt {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    text-transform: none;
+    margin-top: 3px;
+  }
+  .annotation.cushion {
+    right: calc(50% + 58px);
+    text-align: right;
+  }
+  .annotation.cushion .amt { color: var(--accent-bright); }
+  .annotation.cushion.breach .amt { color: var(--danger-bright); }
+  .annotation.gain {
+    left: calc(50% + 58px);
+    text-align: left;
+  }
+  .annotation.gain .amt { color: var(--warn); }
+
+  @media (max-width: 600px) {
+    .annotation { font-size: 9.5px; }
+    .annotation .amt { font-size: 15px; }
+    .annotation.cushion { right: calc(50% + 50px); }
+    .annotation.gain { left: calc(50% + 50px); }
+    .cushion-zone, .gain-zone { left: calc(50% - 36px); width: 72px; }
+    .rung.current::after { left: calc(50% - 6px); width: 12px; height: 12px; top: -6px; }
+  }
+
+  /* ---------- Explainer ---------- */
+  .explainer {
+    margin-top: 48px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    max-width: 720px;
+  }
+  .explainer .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .explainer h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin: 0 0 22px;
+    color: var(--text-strong);
+  }
+  .explainer h3 em {
+    font-style: normal;
+    color: var(--accent-bright);
+    font-weight: 600;
+  }
+  .explainer p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.65;
+    margin: 0 0 14px;
+  }
+  .explainer p strong { color: var(--text); font-weight: 500; }
+  .explainer .formula {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 12px 18px;
+    margin: 10px 0 18px;
+    border-radius: 8px;
+    color: var(--text);
+  }
+  .explainer .formula .var { color: var(--accent-bright); font-weight: 600; }
+
+  /* ---------- CTA — native/editorial, not ad-like ---------- */
+  .cta {
+    margin-top: 48px;
+    padding: 28px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .cta-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .cta-body { flex: 1; }
+  .cta-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .cta h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.25;
+    margin: 0 0 4px;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+  }
+  .cta p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 14px;
+  }
+  .cta-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #042f2e;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 11px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .cta-btn:hover {
+    background: var(--accent-bright);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .cta-btn::after {
+    content: '→';
+    transition: transform 0.15s;
+  }
+  .cta-btn:hover::after { transform: translateX(2px); }
+
+  @media (max-width: 720px) {
+    .cta { flex-direction: column; align-items: flex-start; padding: 24px; }
+    .cta-btn { align-self: stretch; justify-content: center; }
+  }
+
+  .cta-fine {
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.01em;
+  }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 760px;
+  }
+  footer strong { color: var(--text-muted); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Top navigation -->
+  <nav class="topnav">
+    <a href="#" class="brand">
+      <span class="brand-mark"></span>
+      <span>Futures<em>Banter</em></span>
+    </a>
+    <div class="nav-links">
+      <a href="#">Tools</a>
+      <a href="#">Reviews</a>
+      <a href="#">Learn</a>
+      <a href="#">Blog</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header>
+    <div class="kicker"><span class="kicker-dot"></span>Trader Tools / 001</div>
+    <h1>The Apex <em>Trailing Drawdown</em> Calculator</h1>
+    <p class="subtitle">Where's your line in the sand right now? How close are you to locking in the Safety Net? Plug in your numbers — no squinting at a support doc required.</p>
+  </header>
+
+  <main class="grid">
+
+    <!-- Inputs -->
+    <section class="card inputs">
+      <h2 class="section-label">Your Setup</h2>
+
+      <div class="field">
+        <label>Account Phase</label>
+        <div class="segmented" data-input="phase">
+          <button type="button" data-value="eval" class="active">Evaluation</button>
+          <button type="button" data-value="pa">Performance</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Drawdown Type</label>
+        <div class="segmented" data-input="type">
+          <button type="button" data-value="intraday" class="active">Intraday</button>
+          <button type="button" data-value="eod">End of Day</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Account Size</label>
+        <select id="preset">
+          <option value="25000">$25,000</option>
+          <option value="50000" selected>$50,000</option>
+          <option value="75000">$75,000</option>
+          <option value="100000">$100,000</option>
+          <option value="150000">$150,000</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Starting</label>
+          <div class="dollar-input"><input type="number" id="starting" value="50000" step="500"></div>
+        </div>
+        <div class="field">
+          <label>Drawdown</label>
+          <div class="dollar-input"><input type="number" id="drawdown" value="2500" step="100"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Profit Target <span class="hint">eval only</span></label>
+        <div class="dollar-input"><input type="number" id="target" value="3000" step="100"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <label>Peak Balance <span class="hint">all-time high</span></label>
+        <div class="dollar-input"><input type="number" id="peak" value="51200" step="50"></div>
+      </div>
+
+      <div class="field">
+        <label>Current Balance</label>
+        <div class="dollar-input"><input type="number" id="current" value="50800" step="50"></div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="results">
+
+      <div class="status" data-level="safe" id="status">
+        <div class="status-icon" id="statusMark">✓</div>
+        <div class="content">
+          <div class="eyebrow">Status</div>
+          <div class="headline" id="statusTitle">Plenty of room</div>
+          <div class="desc" id="statusDesc">Cushion above the threshold is healthy. Keep trading your plan.</div>
+        </div>
+      </div>
+
+      <div class="numbers">
+        <div class="number positive" id="cushionCard">
+          <div class="lbl">Cushion</div>
+          <div class="val" id="statCushion"><span class="dollar">$</span>2,100</div>
+          <div class="sub" id="statCushionSub">above the red line</div>
+        </div>
+        <div class="number">
+          <div class="lbl">Threshold</div>
+          <div class="val" id="statThreshold"><span class="dollar">$</span>48,700</div>
+          <div class="sub">the red line</div>
+        </div>
+        <div class="number" id="distanceCard">
+          <div class="lbl">To Lock</div>
+          <div class="val" id="statDistance"><span class="dollar">$</span>4,300</div>
+          <div class="sub" id="statDistanceSub">more peak needed</div>
+        </div>
+      </div>
+
+      <div class="ladder-card">
+        <div class="ladder-header">
+          <div>
+            <div class="eyebrow">Visual breakdown</div>
+            <div class="title">Where you stand</div>
+          </div>
+          <div class="ladder-legend">
+            <span><span class="legend-dot" style="background: var(--warn)"></span>Lock</span>
+            <span><span class="legend-dot" style="background: var(--accent)"></span>You</span>
+            <span><span class="legend-dot" style="background: var(--danger)"></span>Threshold</span>
+          </div>
+        </div>
+
+        <div class="ladder" id="ladder">
+          <div class="ladder-axis"></div>
+          <div class="cushion-zone" id="cushionZone"></div>
+          <div class="gain-zone" id="gainZone"></div>
+
+          <div class="rung lock" id="rungLock">
+            <div class="rung-line"></div>
+            <div class="rung-label-left">Lock</div>
+            <div class="rung-label-right" id="lockVal">$53,000</div>
+          </div>
+          <div class="rung peak" id="rungPeak">
+            <div class="rung-line"></div>
+            <div class="rung-label-left">Peak</div>
+            <div class="rung-label-right" id="peakVal">$51,200</div>
+          </div>
+          <div class="rung current" id="rungCurrent">
+            <div class="rung-line"></div>
+            <div class="rung-label-left">You</div>
+            <div class="rung-label-right" id="currentVal">$50,800</div>
+          </div>
+          <div class="rung start" id="rungStart">
+            <div class="rung-line"></div>
+            <div class="rung-label-left">Start</div>
+            <div class="rung-label-right" id="startVal">$50,000</div>
+          </div>
+          <div class="rung threshold" id="rungThreshold">
+            <div class="rung-line"></div>
+            <div class="rung-label-left">Threshold</div>
+            <div class="rung-label-right" id="thresholdVal">$48,700</div>
+          </div>
+
+          <div class="annotation cushion" id="annCushion">
+            Cushion<span class="amt" id="annCushionAmt">$2,100</span>
+          </div>
+          <div class="annotation gain" id="annGain">
+            To Lock<span class="amt" id="annGainAmt">$2,200</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="explainer">
+        <div class="eyebrow">How it works</div>
+        <h3>The threshold is a <em>ratchet</em>, not an anchor.</h3>
+        <p>It starts at <strong>Starting Balance − Max Drawdown</strong>, then climbs with your peak balance (realized <em>and</em> unrealized, on Intraday). It only ever moves up — never down.</p>
+        <div class="formula">Threshold = min(<span class="var">Peak</span> − <span class="var">Drawdown</span>, <span class="var">Lock Level</span>)</div>
+        <p>Once your peak gets high enough, the threshold locks. On an <strong>evaluation</strong>, it locks at your profit target. On a <strong>Performance Account</strong>, it locks at Starting Balance + $100 — Apex's Safety Net. After that, your downside is fixed and you're playing with house money.</p>
+      </div>
+
+      <!-- Native CTA — looks like recommended content, not an ad -->
+      <div class="cta">
+        <div class="cta-icon">◆</div>
+        <div class="cta-body">
+          <div class="cta-eyebrow">Sponsored</div>
+          <h4>Ready to put this to work on a real account?</h4>
+          <p>Apex funds futures traders with up to $300K in buying power.</p>
+        </div>
+        <a href="#" class="cta-btn">Start evaluation</a>
+      </div>
+      <div class="cta-fine">Affiliate disclosure: FuturesBanter earns a commission on qualifying Apex sign-ups. Opinions are our own.</div>
+
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Not financial advice.</strong> Calculator reflects Apex's published Intraday and EOD Trailing Drawdown mechanics. Always verify against Apex's official help center before making trading decisions. Prop firm rules change — last reviewed against 2026 rulesets.</p>
+  </footer>
+
+</div>
+
+<script>
+const state = {
+  phase: 'eval', type: 'intraday',
+  starting: 50000, drawdown: 2500, target: 3000,
+  peak: 51200, current: 50800,
+};
+
+const PRESETS = {
+  25000:  { drawdown: 1500, target: 1500 },
+  50000:  { drawdown: 2500, target: 3000 },
+  75000:  { drawdown: 2750, target: 4250 },
+  100000: { drawdown: 3000, target: 6000 },
+  150000: { drawdown: 5000, target: 9000 },
+};
+
+function compute(s) {
+  const initialThreshold = s.starting - s.drawdown;
+  const lockLevel = s.phase === 'eval' ? s.starting + s.target : s.starting + 100;
+  const peakNeededToLock = s.phase === 'eval'
+    ? s.starting + s.target + s.drawdown
+    : s.starting + s.drawdown + 100;
+  const trailing = s.peak - s.drawdown;
+  const threshold = Math.min(Math.max(trailing, initialThreshold), lockLevel);
+  const isLocked = threshold >= lockLevel;
+  const cushion = s.current - threshold;
+  const distanceToLock = isLocked ? 0 : Math.max(0, peakNeededToLock - s.peak);
+  const targetBalance = s.starting + s.target;
+  let level = 'safe';
+  if (s.current <= threshold) level = 'breached';
+  else if (isLocked) level = 'locked';
+  else if (cushion < s.drawdown * 0.2) level = 'danger';
+  else if (cushion < s.drawdown * 0.5) level = 'warning';
+  return { initialThreshold, lockLevel, peakNeededToLock, threshold, isLocked, cushion, distanceToLock, targetBalance, level };
+}
+
+const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+const fmtDollar = n => {
+  const r = Math.round(n);
+  return (r < 0 ? '−$' : '$') + Math.abs(r).toLocaleString('en-US');
+};
+const fmtSplit = n => {
+  const r = Math.round(n);
+  return { sign: r < 0 ? '−' : '', num: Math.abs(r).toLocaleString('en-US') };
+};
+function setVal(el, n) {
+  const { sign, num } = fmtSplit(n);
+  el.innerHTML = `<span class="dollar">${sign}$</span>${num}`;
+}
+
+function render() {
+  const r = compute(state);
+
+  setVal(document.getElementById('statCushion'), r.cushion);
+  setVal(document.getElementById('statThreshold'), r.threshold);
+  if (r.isLocked) {
+    document.getElementById('statDistance').innerHTML = '<span class="dollar">✓</span>Locked';
+  } else {
+    setVal(document.getElementById('statDistance'), r.distanceToLock);
+  }
+
+  const cushionCard = document.getElementById('cushionCard');
+  cushionCard.classList.remove('positive', 'negative');
+  cushionCard.classList.add(r.cushion >= 0 ? 'positive' : 'negative');
+  document.getElementById('statCushionSub').textContent = r.cushion >= 0 ? 'above the red line' : 'below the red line';
+
+  const distanceCard = document.getElementById('distanceCard');
+  distanceCard.classList.toggle('locked', r.isLocked);
+  document.getElementById('statDistanceSub').textContent = r.isLocked
+    ? (state.phase === 'eval' ? 'locked at target' : 'safety net locked')
+    : 'more peak needed';
+
+  const banner = document.getElementById('status');
+  const mark = document.getElementById('statusMark');
+  const title = document.getElementById('statusTitle');
+  const desc = document.getElementById('statusDesc');
+  banner.setAttribute('data-level', r.level);
+
+  switch (r.level) {
+    case 'breached':
+      mark.innerHTML = '✕'; title.textContent = 'Threshold breached';
+      desc.textContent = `Balance is ${fmt(Math.abs(r.cushion))} below the red line. On a real account, this is a blown evaluation or PA.`;
+      break;
+    case 'danger':
+      mark.innerHTML = '!'; title.textContent = 'One bad trade from the wilderness';
+      desc.textContent = `Only ${fmt(r.cushion)} of cushion left. Tighten stops or walk away before you do something you regret.`;
+      break;
+    case 'warning':
+      mark.innerHTML = '◎'; title.textContent = 'Cutting it close';
+      desc.textContent = `${fmt(r.cushion)} cushion. Workable — but this is not the moment to size up.`;
+      break;
+    case 'locked':
+      mark.innerHTML = '★'; title.textContent = state.phase === 'eval' ? 'Evaluation territory cleared' : 'Safety Net locked';
+      desc.textContent = state.phase === 'eval'
+        ? `Threshold fixed at your profit target. Now it's a consistency game — don't blow it trying to get fancy.`
+        : `Threshold locked at the Safety Net. Downside is capped. You're playing with house money from here on.`;
+      break;
+    default:
+      mark.innerHTML = '✓'; title.textContent = 'Plenty of room';
+      desc.textContent = `${fmt(r.cushion)} cushion above the red line. ${fmt(r.distanceToLock)} more peak and you lock in.`;
+  }
+
+  renderLadder(r);
+}
+
+function renderLadder(r) {
+  const levels = {
+    threshold: r.threshold, start: state.starting,
+    current: state.current, peak: state.peak, lock: r.lockLevel,
+  };
+  const values = Object.values(levels);
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const range = Math.max(maxV - minV, 500);
+  const pad = range * 0.08;
+  const axisMin = minV - pad;
+  const axisMax = maxV + pad;
+  const axisRange = axisMax - axisMin;
+  const toTop = v => ((axisMax - v) / axisRange) * 100;
+
+  setRung('rungLock', toTop(levels.lock), fmt(levels.lock));
+  setRung('rungPeak', toTop(levels.peak), fmt(levels.peak));
+  setRung('rungCurrent', toTop(levels.current), fmt(levels.current));
+  setRung('rungStart', toTop(levels.start), fmt(levels.start));
+  setRung('rungThreshold', toTop(levels.threshold), fmt(levels.threshold));
+
+  const peakRung = document.getElementById('rungPeak');
+  peakRung.style.display = levels.peak === levels.current ? 'none' : '';
+  const startRung = document.getElementById('rungStart');
+  startRung.style.display = (levels.start === levels.peak || levels.start === levels.current || levels.start === levels.threshold) ? 'none' : '';
+
+  const cushionZone = document.getElementById('cushionZone');
+  if (r.cushion > 0) {
+    cushionZone.style.top = toTop(levels.current) + '%';
+    cushionZone.style.height = (toTop(levels.threshold) - toTop(levels.current)) + '%';
+    cushionZone.style.display = '';
+    cushionZone.classList.remove('breach');
+  } else if (r.cushion < 0) {
+    cushionZone.style.top = toTop(levels.threshold) + '%';
+    cushionZone.style.height = (toTop(levels.current) - toTop(levels.threshold)) + '%';
+    cushionZone.style.display = '';
+    cushionZone.classList.add('breach');
+  } else {
+    cushionZone.style.display = 'none';
+  }
+
+  const gainZone = document.getElementById('gainZone');
+  if (levels.lock > levels.current && !r.isLocked) {
+    gainZone.style.top = toTop(levels.lock) + '%';
+    gainZone.style.height = (toTop(levels.current) - toTop(levels.lock)) + '%';
+    gainZone.style.display = '';
+  } else {
+    gainZone.style.display = 'none';
+  }
+
+  const annCushion = document.getElementById('annCushion');
+  const annCushionAmt = document.getElementById('annCushionAmt');
+  if (r.cushion !== 0) {
+    const midPct = (toTop(levels.current) + toTop(levels.threshold)) / 2;
+    annCushion.style.top = `calc(${midPct}% - 20px)`;
+    annCushion.style.display = '';
+    annCushionAmt.textContent = fmtDollar(r.cushion);
+    annCushion.classList.toggle('breach', r.cushion < 0);
+    const zoneSize = Math.abs(toTop(levels.current) - toTop(levels.threshold));
+    annCushion.style.visibility = zoneSize < 8 ? 'hidden' : 'visible';
+  } else {
+    annCushion.style.display = 'none';
+  }
+
+  const annGain = document.getElementById('annGain');
+  const annGainAmt = document.getElementById('annGainAmt');
+  const gainAmount = levels.lock - levels.current;
+  if (gainAmount > 0 && !r.isLocked) {
+    const midPct = (toTop(levels.lock) + toTop(levels.current)) / 2;
+    annGain.style.top = `calc(${midPct}% - 20px)`;
+    annGain.style.display = '';
+    annGainAmt.textContent = fmtDollar(gainAmount);
+    const zoneSize = Math.abs(toTop(levels.lock) - toTop(levels.current));
+    annGain.style.visibility = zoneSize < 8 ? 'hidden' : 'visible';
+  } else {
+    annGain.style.display = 'none';
+  }
+}
+
+function setRung(id, topPct, valText) {
+  const rung = document.getElementById(id);
+  rung.style.top = topPct + '%';
+  const valEl = rung.querySelector('.rung-label-right');
+  if (valEl) valEl.textContent = valText;
+}
+
+function setupSegmented(groupAttr, key) {
+  const buttons = document.querySelectorAll(`[data-input="${groupAttr}"] button`);
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state[key] = btn.dataset.value;
+      render();
+    });
+  });
+}
+
+setupSegmented('phase', 'phase');
+setupSegmented('type', 'type');
+
+const inputs = {
+  starting: document.getElementById('starting'),
+  drawdown: document.getElementById('drawdown'),
+  target: document.getElementById('target'),
+  peak: document.getElementById('peak'),
+  current: document.getElementById('current'),
+};
+
+Object.entries(inputs).forEach(([key, el]) => {
+  el.addEventListener('input', () => {
+    const v = parseFloat(el.value);
+    if (!isNaN(v)) state[key] = v;
+    render();
+  });
+});
+
+document.getElementById('preset').addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val === 'custom') return;
+  const size = parseInt(val);
+  const p = PRESETS[size];
+  if (p) {
+    state.starting = size;
+    state.drawdown = p.drawdown;
+    state.target = p.target;
+    state.peak = size;
+    state.current = size;
+    inputs.starting.value = size;
+    inputs.drawdown.value = p.drawdown;
+    inputs.target.value = p.target;
+    inputs.peak.value = size;
+    inputs.current.value = size;
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
+
