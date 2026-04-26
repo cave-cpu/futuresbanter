@@ -1,63 +1,244 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage={AboutHeroImage}
->
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={`About — ${SITE_TITLE}`} description="Who's behind FuturesBanter, why it exists, and what you'll find here." />
+  </head>
+  <body>
+    <Header />
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+    <main>
+      <article class="container about">
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+        <header class="about-hero">
+          <div class="kicker"><span class="kicker-dot"></span>About</div>
+          <h1>Built by a trader who <em>blew enough accounts</em> to know better.</h1>
+          <p class="lede">FuturesBanter is a small site with a simple goal: build the tools and write the explanations I wish existed when I started. Real tools, plain language, and a trader's perspective on a corner of the market that rewards the people who actually understand the rules.</p>
+        </header>
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+        <section class="about-section">
+          <h2>Hi, I'm Nigel.</h2>
+          <p>I'm based in Idaho. I trade futures — mostly micro contracts (MES, MNQ), with a style somewhere between day trading and short swings depending on what the chart looks like that morning.</p>
+          <p>I got into futures in 2018 at a trading school in Phoenix. Five-plus years later, I'm still here, still learning, and currently grinding evaluations on the prop firm side because I'd rather risk someone else's money than my own.</p>
+        </section>
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
-</Layout>
+        <section class="about-section">
+          <h2>Why this site exists</h2>
+          <p>Like most retail traders who try to get funded, I blew accounts. More than I'd like to admit. The reason wasn't bad trades — it was a rule I didn't understand: <strong>the trailing drawdown on intraday accounts moves with your unrealized P&L</strong>, not just your closed equity.</p>
+          <p>Translation: you can be up $400 on an open position, the trailing threshold ratchets up to follow you, the trade comes back, and now you've lost $400 plus another $200 of cushion you didn't know you had. By the time the position closes flat, you've just blown an account on a trade that broke even.</p>
+          <p>The mechanic is in the documentation, but it's the kind of detail that's easier to internalize when you can see it move. So I built the calculator I wish I'd had on day one — the one you can <a href="/tools/apex-drawdown-calculator">try right here</a>. It shows you exactly where your line is, where your peak is, and how close you are to locking in the Safety Net. Visual, interactive, and free.</p>
+        </section>
+
+        <section class="about-section">
+          <h2>What you'll find here</h2>
+          <ul class="about-list">
+            <li><strong>Trader tools.</strong> Calculators built for actual prop firm rules, not generic finance widgets. The Apex Trailing Drawdown Calculator is the first; tick value, position sizing, and consistency rule checkers are coming.</li>
+            <li><strong>Plain-English breakdowns.</strong> Posts that explain the rules the way a trader would, not the way a support doc does.</li>
+            <li><strong>Honest reviews.</strong> Prop firms have real differences in rules, payouts, and platforms — I'll walk through them so you can pick the right one for your style.</li>
+          </ul>
+        </section>
+
+        <section class="about-section">
+          <h2>How I make money</h2>
+          <p>FuturesBanter is supported by affiliate partnerships with prop firms — including Apex Trader Funding. When you click a link to a partner and sign up, I earn a commission. It costs you nothing extra, and in some cases it gets you a discount.</p>
+          <p>I want to be straight about this: affiliate income is part of why this site exists. But it doesn't shape what I write. My job is to give you accurate information so you can choose the firm and account that fits your trading — that's what builds long-term trust, and that's what keeps both readers and partners happy.</p>
+        </section>
+
+        <section class="about-section">
+          <h2>The fine print</h2>
+          <p>I'm not a financial advisor. Nothing on this site is investment advice. Trading futures involves significant risk of loss, including the loss of your entire account. Don't trade money you can't afford to lose. If you're new to futures, start with a sim account and read everything you can before risking a dollar.</p>
+        </section>
+
+        <div class="about-cta">
+          <div class="cta-icon">◆</div>
+          <div class="cta-body">
+            <h3>Try the calculator that started this site.</h3>
+            <p>The Apex Trailing Drawdown Calculator — free, no signup, instantly useful.</p>
+          </div>
+          <a href="/tools/apex-drawdown-calculator" class="btn-primary">Open calculator</a>
+        </div>
+
+      </article>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .about {
+    max-width: 760px;
+    padding-top: 32px;
+  }
+
+  /* Hero */
+  .about-hero {
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 22px;
+    padding: 6px 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 999px;
+  }
+  .kicker-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .about-hero h1 {
+    margin-bottom: 24px;
+    max-width: 720px;
+  }
+  .about-hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .lede {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--text);
+    max-width: 660px;
+  }
+
+  /* Sections */
+  .about-section {
+    margin-bottom: 44px;
+  }
+  .about-section h2 {
+    margin-bottom: 18px;
+    font-size: 28px;
+  }
+  .about-section p {
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+  }
+  .about-section p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .about-section a {
+    color: var(--accent-bright);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-dim);
+    text-underline-offset: 3px;
+  }
+  .about-section a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  .about-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .about-list li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    padding-left: 22px;
+    position: relative;
+  }
+  .about-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    top: 1px;
+    color: var(--accent);
+    font-size: 11px;
+  }
+  .about-list strong {
+    color: var(--text-strong);
+    font-weight: 600;
+  }
+
+  /* CTA */
+  .about-cta {
+    margin-top: 56px;
+    padding: 28px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .cta-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid; place-items: center;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .cta-body { flex: 1; }
+  .cta-body h3 {
+    font-size: 20px;
+    margin-bottom: 4px;
+    color: var(--text-strong);
+  }
+  .cta-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .btn-primary {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #042f2e;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14.5px;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover {
+    background: var(--accent-bright);
+    color: #042f2e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  @media (max-width: 720px) {
+    .about-cta { flex-direction: column; align-items: flex-start; padding: 24px; }
+    .btn-primary { align-self: stretch; justify-content: center; }
+  }
+</style>

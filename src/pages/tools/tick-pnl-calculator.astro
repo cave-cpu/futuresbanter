@@ -1,0 +1,1351 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <BaseHead
+    title="Futures Tick and PnL Calculator — FuturesBanter"
+    description="Free futures tick value, profit and loss, position sizing, and risk-reward calculator. Supports 30+ contracts including ES, NQ, CL, GC, micros, grains, currencies, and bonds."
+  />
+</head>
+<body>
+  <Header />
+
+  <main>
+    <div class="container calc-page">
+
+      <section class="calc-hero">
+        <div class="kicker"><span class="kicker-dot"></span>Trader Tools / 002</div>
+        <h1>Futures <em>Tick and PnL</em> Calculator</h1>
+        <p class="subtitle">Four tools, one page. Run a P&amp;L on any trade, plan a risk-reward setup with multiple targets, look up tick values for 30+ contracts, or size a position based on your stop. Bookmark it &mdash; you'll be back.</p>
+      </section>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="pnl" type="button">PnL Calculator</button>
+        <button class="tab" data-tab="rr" type="button">Risk / Reward</button>
+        <button class="tab" data-tab="reference" type="button">Tick Reference</button>
+        <button class="tab" data-tab="position" type="button">Position Size</button>
+      </div>
+
+      <!-- ============== PNL CALCULATOR ============== -->
+      <section class="panel" data-panel="pnl">
+        <div class="panel-grid">
+
+          <div class="card inputs">
+            <h2 class="section-label">Trade Setup</h2>
+
+            <div class="field">
+              <label>Contract</label>
+              <select id="pnl-contract"></select>
+              <div class="field-hint" id="pnl-contract-hint">1 tick = $12.50</div>
+            </div>
+
+            <div class="field">
+              <label>Direction</label>
+              <div class="segmented" data-input="pnl-side">
+                <button type="button" data-value="long" class="active">Long</button>
+                <button type="button" data-value="short">Short</button>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label>Entry</label>
+                <input type="number" id="pnl-entry" value="5200.00" step="0.25" />
+              </div>
+              <div class="field">
+                <label>Exit</label>
+                <input type="number" id="pnl-exit" value="5210.00" step="0.25" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Contracts</label>
+              <input type="number" id="pnl-qty" value="1" min="1" step="1" />
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field">
+              <label>Round-Trip Commission <span class="hint">per contract</span></label>
+              <div class="dollar-input"><input type="number" id="pnl-comm" value="4.00" step="0.10" min="0" /></div>
+            </div>
+          </div>
+
+          <div class="results">
+            <div class="status" data-level="safe" id="pnl-status">
+              <div class="status-icon" id="pnl-icon">+</div>
+              <div class="content">
+                <div class="status-eyebrow">Result</div>
+                <div class="headline" id="pnl-headline">+$500.00 winner</div>
+                <div class="desc" id="pnl-desc">10 points times $50 per point times 1 contract, minus $4 in commissions.</div>
+              </div>
+            </div>
+
+            <div class="numbers">
+              <div class="number positive" id="pnl-card-net">
+                <div class="lbl">Net PnL</div>
+                <div class="val" id="pnl-net">+$496<span class="dollar">.00</span></div>
+                <div class="sub">after commissions</div>
+              </div>
+              <div class="number" id="pnl-card-gross">
+                <div class="lbl">Gross PnL</div>
+                <div class="val" id="pnl-gross">+$500<span class="dollar">.00</span></div>
+                <div class="sub">before fees</div>
+              </div>
+              <div class="number" id="pnl-card-ticks">
+                <div class="lbl">Move</div>
+                <div class="val" id="pnl-ticks">40 t</div>
+                <div class="sub" id="pnl-points">10.00 points</div>
+              </div>
+            </div>
+
+            <div class="explainer">
+              <div class="explainer-eyebrow">The math</div>
+              <p><span class="mono" id="pnl-formula">(40 x $12.50) x 1 contract = $500.00</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== RISK / REWARD ============== -->
+      <section class="panel" data-panel="rr" hidden>
+        <div class="panel-grid">
+
+          <div class="card inputs">
+            <h2 class="section-label">Trade Plan</h2>
+
+            <div class="field">
+              <label>Contract</label>
+              <select id="rr-contract"></select>
+              <div class="field-hint" id="rr-contract-hint">1 tick = $12.50</div>
+            </div>
+
+            <div class="field">
+              <label>Direction</label>
+              <div class="segmented" data-input="rr-side">
+                <button type="button" data-value="long" class="active">Long</button>
+                <button type="button" data-value="short">Short</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Scaling Mode</label>
+              <div class="segmented" data-input="rr-mode">
+                <button type="button" data-value="percent" class="active">% of Position</button>
+                <button type="button" data-value="contracts">Exact Contracts</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="two-col">
+              <div class="field">
+                <label>Entry</label>
+                <input type="number" id="rr-entry" value="5200.00" step="0.25" />
+              </div>
+              <div class="field">
+                <label>Stop</label>
+                <input type="number" id="rr-stop" value="5195.00" step="0.25" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Total Contracts</label>
+              <input type="number" id="rr-qty" value="4" min="1" step="1" />
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="targets-head">
+              <span class="targets-label">Targets</span>
+              <button type="button" id="rr-add-target" class="add-btn">+ Add target</button>
+            </div>
+
+            <div id="rr-targets"></div>
+          </div>
+
+          <div class="results">
+            <div class="status" data-level="safe" id="rr-status">
+              <div class="status-icon" id="rr-icon">R</div>
+              <div class="content">
+                <div class="status-eyebrow">Blended R / R</div>
+                <div class="headline" id="rr-headline">2.10 R</div>
+                <div class="desc" id="rr-desc">Plan risks $200 to make $420 if all targets fill.</div>
+              </div>
+            </div>
+
+            <div class="numbers">
+              <div class="number negative" id="rr-card-risk">
+                <div class="lbl">Risk</div>
+                <div class="val" id="rr-risk"><span class="dollar">-$</span>200<span class="dollar">.00</span></div>
+                <div class="sub" id="rr-risk-sub">if stop hits</div>
+              </div>
+              <div class="number positive" id="rr-card-reward">
+                <div class="lbl">Reward</div>
+                <div class="val" id="rr-reward">+$420<span class="dollar">.00</span></div>
+                <div class="sub" id="rr-reward-sub">if all targets fill</div>
+              </div>
+              <div class="number positive" id="rr-card-rr">
+                <div class="lbl">Blended R / R</div>
+                <div class="val" id="rr-rr">2.10</div>
+                <div class="sub" id="rr-rr-sub">reward per $1 risked</div>
+              </div>
+            </div>
+
+            <div class="rr-breakdown" id="rr-breakdown">
+              <div class="rr-breakdown-head">
+                <div class="explainer-eyebrow">Per-target breakdown</div>
+                <span class="rr-breakdown-hint">Distance / contracts / dollars / R</span>
+              </div>
+              <div class="rr-rows" id="rr-rows"></div>
+            </div>
+
+            <div class="explainer">
+              <div class="explainer-eyebrow">How blended R / R works</div>
+              <p>Each target's reward is weighted by how many contracts you exit there. Add them up and divide by total risk. A blended <strong>2.0 R</strong> means you make $2 for every $1 risked when the plan plays out perfectly. Most pros aim for blended <strong>1.5 R</strong> or higher; below 1.0 R the math rarely works long term.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== TICK REFERENCE ============== -->
+      <section class="panel" data-panel="reference" hidden>
+        <div class="reference-head">
+          <h2>Tick Reference</h2>
+          <p>The minimum tick size, dollar value per tick, and dollar value per point for every contract this calculator supports. Use it as a lookup. Bookmark it as a cheat sheet.</p>
+
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all" type="button">All</button>
+            <button class="filter-btn" data-filter="index" type="button">Index</button>
+            <button class="filter-btn" data-filter="energy" type="button">Energy</button>
+            <button class="filter-btn" data-filter="metal" type="button">Metals</button>
+            <button class="filter-btn" data-filter="grain" type="button">Grains</button>
+            <button class="filter-btn" data-filter="rate" type="button">Rates</button>
+            <button class="filter-btn" data-filter="fx" type="button">FX</button>
+            <button class="filter-btn" data-filter="micro" type="button">Micros only</button>
+          </div>
+        </div>
+
+        <div class="ref-table-wrap">
+          <table class="ref-table" id="ref-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th class="num">Tick Size</th>
+                <th class="num">Tick Value</th>
+                <th class="num">Point Value</th>
+              </tr>
+            </thead>
+            <tbody id="ref-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============== POSITION SIZE ============== -->
+      <section class="panel" data-panel="position" hidden>
+        <div class="panel-grid">
+          <div class="card inputs">
+            <h2 class="section-label">Risk Setup</h2>
+
+            <div class="field">
+              <label>Contract</label>
+              <select id="pos-contract"></select>
+              <div class="field-hint" id="pos-contract-hint">1 tick = $12.50</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field">
+              <label>Account Size</label>
+              <div class="dollar-input"><input type="number" id="pos-account" value="50000" step="1000" min="0" /></div>
+            </div>
+
+            <div class="field">
+              <label>Risk Per Trade <span class="hint">% of account</span></label>
+              <input type="number" id="pos-risk-pct" value="1" step="0.1" min="0" />
+            </div>
+
+            <div class="field">
+              <label>Stop Distance <span class="hint">in ticks</span></label>
+              <input type="number" id="pos-stop" value="8" min="1" step="1" />
+            </div>
+          </div>
+
+          <div class="results">
+            <div class="status" data-level="safe" id="pos-status">
+              <div class="status-icon">+</div>
+              <div class="content">
+                <div class="status-eyebrow">Suggested Size</div>
+                <div class="headline" id="pos-headline">5 contracts</div>
+                <div class="desc" id="pos-desc">Sized to risk $500 (1% of $50,000) on an 8-tick stop in ES.</div>
+              </div>
+            </div>
+
+            <div class="numbers">
+              <div class="number positive">
+                <div class="lbl">Contracts</div>
+                <div class="val" id="pos-contracts">5</div>
+                <div class="sub">whole contracts</div>
+              </div>
+              <div class="number">
+                <div class="lbl">Risk Per Contract</div>
+                <div class="val" id="pos-risk-each"><span class="dollar">$</span>100</div>
+                <div class="sub">8 t times tick value</div>
+              </div>
+              <div class="number">
+                <div class="lbl">Total Risk</div>
+                <div class="val" id="pos-risk-total"><span class="dollar">$</span>500</div>
+                <div class="sub" id="pos-risk-pct-display">1.00% of account</div>
+              </div>
+            </div>
+
+            <div class="explainer">
+              <div class="explainer-eyebrow">How it works</div>
+              <p><strong>Contracts = (Account x Risk %) divided by (Stop Ticks x Tick Value)</strong>, rounded down. Rounding down keeps you under your risk cap, never over.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="calc-disclaimer">
+        <p><strong>Not financial advice.</strong> Tick values reflect CME Group specifications as of 2026. Always verify with your broker before trading. Some contracts (DX, ZT, ZF, ZN) use fractional tick sizes; values shown are decimal equivalents.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <Footer />
+</body>
+</html>
+
+<style>
+  .calc-page { padding-top: 24px; }
+
+  .calc-hero {
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding: 6px 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 999px;
+  }
+  .kicker-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .calc-hero h1 { margin-bottom: 18px; max-width: 900px; }
+  .calc-hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .tab {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 12px 18px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); background: var(--surface); }
+  .tab.active {
+    color: var(--accent-bright);
+    border-bottom-color: var(--accent);
+    background: var(--accent-bg);
+  }
+
+  .panel { animation: fadein 0.2s ease; }
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .panel-grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .inputs {
+    padding: 28px;
+    position: sticky;
+    top: 124px;
+  }
+  @media (max-width: 960px) {
+    .inputs { position: static; padding: 24px; }
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-hint {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  label .hint {
+    color: var(--text-dim);
+    font-weight: 400;
+    margin-left: 8px;
+    font-size: 12px;
+  }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .segmented button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 9px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.15s;
+  }
+  .segmented button:hover:not(.active) { color: var(--text); background: var(--surface-hover); }
+  .segmented button.active {
+    background: var(--surface-2);
+    color: var(--text-strong);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 0 0 1px var(--border-accent);
+  }
+
+  select, input[type="number"] {
+    width: 100%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 11px 14px;
+    transition: all 0.15s;
+  }
+  select:hover, input[type="number"]:hover { border-color: var(--border-strong); }
+  select:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%239699a1' stroke-width='1.5' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+  .dollar-input { position: relative; }
+  .dollar-input::before {
+    content: '$';
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .dollar-input input { padding-left: 28px; }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  .divider { height: 1px; background: var(--border); margin: 22px -28px; }
+  @media (max-width: 960px) { .divider { margin: 20px -24px; } }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .results { display: flex; flex-direction: column; gap: 16px; }
+
+  .status {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .status::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+  .status-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--accent);
+  }
+  .status-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .status .headline {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+  }
+  .status .desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-width: 540px;
+  }
+  .status[data-level="loss"]::before { background: var(--danger); }
+  .status[data-level="loss"] .status-icon {
+    background: var(--danger-bg); border-color: var(--danger-ring); color: var(--danger);
+  }
+  .status[data-level="loss"] .headline { color: var(--danger-bright); }
+
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 720px) { .numbers { grid-template-columns: 1fr; } }
+  .number {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    transition: border-color 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .number:hover { border-color: var(--border-strong); }
+  .number .lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .number .val {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 30px;
+    letter-spacing: -0.025em;
+    color: var(--text-strong);
+    line-height: 1;
+  }
+  .number .val .dollar {
+    color: var(--text-dim);
+    font-size: 19px;
+    font-weight: 500;
+    margin-right: 1px;
+  }
+  .number .sub { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .number.positive .val { color: var(--accent-bright); }
+  .number.positive .val .dollar { color: var(--accent-dim); }
+  .number.negative .val { color: var(--danger-bright); }
+  .number.negative .val .dollar { color: var(--danger); opacity: 0.7; }
+
+  .explainer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow-sm);
+  }
+  .explainer-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .explainer p { color: var(--text-muted); font-size: 14px; margin: 0; }
+  .explainer .mono {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg-raised);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .explainer p strong { color: var(--text); font-weight: 600; }
+
+  .reference-head { margin-bottom: 24px; }
+  .reference-head h2 {
+    font-size: 28px;
+    margin-bottom: 12px;
+    color: var(--text-strong);
+  }
+  .reference-head p {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin-bottom: 20px;
+  }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { color: var(--text); border-color: var(--border-strong); }
+  .filter-btn.active {
+    background: var(--accent-bg);
+    border-color: var(--accent-ring);
+    color: var(--accent-bright);
+  }
+
+  .ref-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+  }
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 720px;
+  }
+  .ref-table thead th {
+    text-align: left;
+    padding: 14px 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-raised);
+  }
+  .ref-table th.num, .ref-table td.num { text-align: right; font-family: var(--font-mono); }
+  .ref-table tbody td {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .ref-table tbody tr:last-child td { border-bottom: none; }
+  .ref-table tbody tr:hover td { background: var(--surface-hover); }
+  .ref-table .sym {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--accent-bright);
+  }
+  .ref-table .cat {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Risk / Reward */
+  .targets-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .targets-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .add-btn {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    color: var(--accent-bright);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .add-btn:hover {
+    background: var(--accent);
+    color: #042f2e;
+  }
+  .add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .target-row {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr auto;
+    align-items: end;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .target-row .target-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-bright);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 6px;
+    padding: 9px 10px;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    min-width: 36px;
+  }
+  .target-row label {
+    font-size: 11px;
+    margin-bottom: 4px;
+    color: var(--text-muted);
+  }
+  .target-row input {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .target-row .remove-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 32px;
+    height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.15s;
+    align-self: end;
+  }
+  .target-row .remove-btn:hover {
+    border-color: var(--danger);
+    color: var(--danger-bright);
+  }
+  .target-row .remove-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .rr-breakdown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow-sm);
+  }
+  .rr-breakdown-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .rr-breakdown-hint {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+  .rr-rows { display: flex; flex-direction: column; gap: 6px; }
+  .rr-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 1fr 1fr 60px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .rr-row:last-child { border-bottom: none; }
+  .rr-row .tag { color: var(--accent-bright); font-weight: 700; }
+  .rr-row .meta { color: var(--text-muted); }
+  .rr-row .dollars { color: var(--accent-bright); text-align: right; }
+  .rr-row .dollars.neg { color: var(--danger-bright); }
+  .rr-row .r { color: var(--text-strong); text-align: right; font-weight: 600; }
+
+  .calc-disclaimer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    max-width: 760px;
+  }
+  .calc-disclaimer p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .calc-disclaimer strong { color: var(--text-muted); font-weight: 500; }
+</style>
+
+<script is:inline>
+  const CONTRACTS = [
+    { sym: 'ES',  name: 'E-mini S and P 500',          cat: 'index',  tickSize: 0.25,    tickValue: 12.50,  pointValue: 50,       micro: false },
+    { sym: 'NQ',  name: 'E-mini Nasdaq 100',           cat: 'index',  tickSize: 0.25,    tickValue: 5.00,   pointValue: 20,       micro: false },
+    { sym: 'YM',  name: 'E-mini Dow',                  cat: 'index',  tickSize: 1,       tickValue: 5.00,   pointValue: 5,        micro: false },
+    { sym: 'RTY', name: 'E-mini Russell 2000',         cat: 'index',  tickSize: 0.10,    tickValue: 5.00,   pointValue: 50,       micro: false },
+    { sym: 'MES', name: 'Micro E-mini S and P 500',    cat: 'index',  tickSize: 0.25,    tickValue: 1.25,   pointValue: 5,        micro: true  },
+    { sym: 'MNQ', name: 'Micro E-mini Nasdaq 100',     cat: 'index',  tickSize: 0.25,    tickValue: 0.50,   pointValue: 2,        micro: true  },
+    { sym: 'MYM', name: 'Micro E-mini Dow',            cat: 'index',  tickSize: 1,       tickValue: 0.50,   pointValue: 0.50,     micro: true  },
+    { sym: 'M2K', name: 'Micro E-mini Russell',        cat: 'index',  tickSize: 0.10,    tickValue: 0.50,   pointValue: 5,        micro: true  },
+    { sym: 'CL',  name: 'WTI Crude Oil',               cat: 'energy', tickSize: 0.01,    tickValue: 10.00,  pointValue: 1000,     micro: false },
+    { sym: 'MCL', name: 'Micro WTI Crude',             cat: 'energy', tickSize: 0.01,    tickValue: 1.00,   pointValue: 100,      micro: true  },
+    { sym: 'NG',  name: 'Natural Gas',                 cat: 'energy', tickSize: 0.001,   tickValue: 10.00,  pointValue: 10000,    micro: false },
+    { sym: 'RB',  name: 'RBOB Gasoline',               cat: 'energy', tickSize: 0.0001,  tickValue: 4.20,   pointValue: 42000,    micro: false },
+    { sym: 'HO',  name: 'Heating Oil',                 cat: 'energy', tickSize: 0.0001,  tickValue: 4.20,   pointValue: 42000,    micro: false },
+    { sym: 'GC',  name: 'Gold',                        cat: 'metal',  tickSize: 0.10,    tickValue: 10.00,  pointValue: 100,      micro: false },
+    { sym: 'MGC', name: 'Micro Gold',                  cat: 'metal',  tickSize: 0.10,    tickValue: 1.00,   pointValue: 10,       micro: true  },
+    { sym: 'SI',  name: 'Silver',                      cat: 'metal',  tickSize: 0.005,   tickValue: 25.00,  pointValue: 5000,     micro: false },
+    { sym: 'SIL', name: 'Micro Silver',                cat: 'metal',  tickSize: 0.005,   tickValue: 5.00,   pointValue: 1000,     micro: true  },
+    { sym: 'HG',  name: 'Copper',                      cat: 'metal',  tickSize: 0.0005,  tickValue: 12.50,  pointValue: 25000,    micro: false },
+    { sym: 'PL',  name: 'Platinum',                    cat: 'metal',  tickSize: 0.10,    tickValue: 5.00,   pointValue: 50,       micro: false },
+    { sym: 'ZC',  name: 'Corn',                        cat: 'grain',  tickSize: 0.25,    tickValue: 12.50,  pointValue: 50,       micro: false },
+    { sym: 'ZS',  name: 'Soybeans',                    cat: 'grain',  tickSize: 0.25,    tickValue: 12.50,  pointValue: 50,       micro: false },
+    { sym: 'ZW',  name: 'Wheat',                       cat: 'grain',  tickSize: 0.25,    tickValue: 12.50,  pointValue: 50,       micro: false },
+    { sym: 'ZL',  name: 'Soybean Oil',                 cat: 'grain',  tickSize: 0.01,    tickValue: 6.00,   pointValue: 600,      micro: false },
+    { sym: 'ZM',  name: 'Soybean Meal',                cat: 'grain',  tickSize: 0.10,    tickValue: 10.00,  pointValue: 100,      micro: false },
+    { sym: 'ZB',  name: '30-Year T-Bond',              cat: 'rate',   tickSize: 0.03125, tickValue: 31.25,  pointValue: 1000,     micro: false },
+    { sym: 'ZN',  name: '10-Year T-Note',              cat: 'rate',   tickSize: 0.015625,tickValue: 15.625, pointValue: 1000,     micro: false },
+    { sym: 'ZF',  name: '5-Year T-Note',               cat: 'rate',   tickSize: 0.0078125,tickValue: 7.8125,pointValue: 1000,     micro: false },
+    { sym: 'ZT',  name: '2-Year T-Note',               cat: 'rate',   tickSize: 0.0078125,tickValue: 15.625,pointValue: 2000,     micro: false },
+    { sym: '6E',  name: 'Euro FX',                     cat: 'fx',     tickSize: 0.00005, tickValue: 6.25,   pointValue: 125000,   micro: false },
+    { sym: '6B',  name: 'British Pound',               cat: 'fx',     tickSize: 0.0001,  tickValue: 6.25,   pointValue: 62500,    micro: false },
+    { sym: '6J',  name: 'Japanese Yen',                cat: 'fx',     tickSize: 0.0000005,tickValue: 6.25,  pointValue: 12500000, micro: false },
+    { sym: '6A',  name: 'Australian Dollar',           cat: 'fx',     tickSize: 0.0001,  tickValue: 10.00,  pointValue: 100000,   micro: false },
+    { sym: '6C',  name: 'Canadian Dollar',             cat: 'fx',     tickSize: 0.00005, tickValue: 5.00,   pointValue: 100000,   micro: false },
+    { sym: 'DX',  name: 'US Dollar Index',             cat: 'fx',     tickSize: 0.005,   tickValue: 5.00,   pointValue: 1000,     micro: false }
+  ];
+
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.dataset.tab;
+      panels.forEach(p => {
+        if (p.dataset.panel === target) p.removeAttribute('hidden');
+        else p.setAttribute('hidden', '');
+      });
+    });
+  });
+
+  function populateSelect(selectEl) {
+    if (!selectEl) return;
+    const groups = {
+      index: 'Index Futures',
+      energy: 'Energy',
+      metal: 'Metals',
+      grain: 'Grains',
+      rate: 'Interest Rates',
+      fx: 'Currencies'
+    };
+    Object.entries(groups).forEach(([key, label]) => {
+      const og = document.createElement('optgroup');
+      og.label = label;
+      CONTRACTS.filter(c => c.cat === key).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.sym;
+        opt.textContent = c.sym + ' - ' + c.name;
+        og.appendChild(opt);
+      });
+      selectEl.appendChild(og);
+    });
+  }
+
+  function getContract(sym) { return CONTRACTS.find(c => c.sym === sym); }
+
+  const fmtMoney = (n) => {
+    const r = Math.abs(n);
+    const s = r.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return (n < 0 ? '-$' : '$') + s;
+  };
+  const fmtMoneySigned = (n) => (n >= 0 ? '+' : '') + fmtMoney(n);
+  const splitMoney = (n) => {
+    const r = Math.abs(n);
+    const whole = Math.trunc(r).toLocaleString('en-US');
+    const decimal = (r - Math.trunc(r)).toFixed(2).slice(1);
+    const sign = n < 0 ? '-' : (n > 0 ? '+' : '');
+    return { sign, whole, decimal };
+  };
+  function setSplitVal(el, n) {
+    const parts = splitMoney(n);
+    el.innerHTML = parts.sign + '$' + parts.whole + '<span class="dollar">' + parts.decimal + '</span>';
+  }
+
+  // ========== PNL ==========
+  populateSelect(document.getElementById('pnl-contract'));
+  document.getElementById('pnl-contract').value = 'ES';
+
+  const pnl = {
+    side: 'long',
+    contract: document.getElementById('pnl-contract'),
+    entry: document.getElementById('pnl-entry'),
+    exit: document.getElementById('pnl-exit'),
+    qty: document.getElementById('pnl-qty'),
+    comm: document.getElementById('pnl-comm'),
+    hint: document.getElementById('pnl-contract-hint'),
+    icon: document.getElementById('pnl-icon'),
+    status: document.getElementById('pnl-status'),
+    headline: document.getElementById('pnl-headline'),
+    desc: document.getElementById('pnl-desc'),
+    net: document.getElementById('pnl-net'),
+    gross: document.getElementById('pnl-gross'),
+    ticks: document.getElementById('pnl-ticks'),
+    points: document.getElementById('pnl-points'),
+    formula: document.getElementById('pnl-formula'),
+    cardNet: document.getElementById('pnl-card-net')
+  };
+  function renderPnl() {
+    const c = getContract(pnl.contract.value);
+    if (!c) return;
+    const entry = parseFloat(pnl.entry.value) || 0;
+    const exit = parseFloat(pnl.exit.value) || 0;
+    const qty = Math.max(1, parseInt(pnl.qty.value) || 1);
+    const comm = Math.max(0, parseFloat(pnl.comm.value) || 0);
+    const direction = pnl.side === 'long' ? 1 : -1;
+    const points = (exit - entry) * direction;
+    const ticks = Math.round(points / c.tickSize);
+    const gross = ticks * c.tickValue * qty;
+    const totalComm = comm * qty;
+    const net = gross - totalComm;
+
+    pnl.hint.textContent = '1 tick = ' + fmtMoney(c.tickValue) + ' / ' + c.tickSize + ' pts';
+    setSplitVal(pnl.gross, gross);
+    setSplitVal(pnl.net, net);
+    pnl.ticks.textContent = ticks + ' t';
+    pnl.points.textContent = points.toFixed(c.tickSize < 0.01 ? 4 : 2) + ' points';
+    pnl.formula.textContent = '(' + ticks + ' x ' + fmtMoney(c.tickValue) + ') x ' + qty + ' = ' + fmtMoney(gross);
+
+    pnl.cardNet.classList.toggle('positive', net >= 0);
+    pnl.cardNet.classList.toggle('negative', net < 0);
+
+    if (net > 0) {
+      pnl.status.setAttribute('data-level', 'safe');
+      pnl.icon.textContent = '+';
+      pnl.headline.textContent = fmtMoneySigned(net) + ' winner';
+      pnl.desc.textContent = ticks + ' ticks x ' + fmtMoney(c.tickValue) + ' x ' + qty + ' contract' + (qty > 1 ? 's' : '') + ', minus ' + fmtMoney(totalComm) + ' in commissions.';
+    } else if (net < 0) {
+      pnl.status.setAttribute('data-level', 'loss');
+      pnl.icon.textContent = '-';
+      pnl.headline.textContent = fmtMoneySigned(net) + ' loser';
+      pnl.desc.textContent = Math.abs(ticks) + ' ticks against you x ' + fmtMoney(c.tickValue) + ' x ' + qty + ' contract' + (qty > 1 ? 's' : '') + ', plus ' + fmtMoney(totalComm) + ' in commissions.';
+    } else {
+      pnl.status.setAttribute('data-level', 'safe');
+      pnl.icon.textContent = '=';
+      pnl.headline.textContent = 'Scratch';
+      pnl.desc.textContent = 'Flat trade. Commissions cost you ' + fmtMoney(totalComm) + '.';
+    }
+  }
+  ['pnl-contract', 'pnl-entry', 'pnl-exit', 'pnl-qty', 'pnl-comm'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderPnl);
+  });
+  document.querySelectorAll('[data-input="pnl-side"] button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-input="pnl-side"] button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      pnl.side = btn.dataset.value;
+      renderPnl();
+    });
+  });
+  pnl.contract.addEventListener('change', () => {
+    const c = getContract(pnl.contract.value);
+    if (c) { pnl.entry.step = c.tickSize; pnl.exit.step = c.tickSize; }
+  });
+  renderPnl();
+
+  // ========== POSITION SIZE ==========
+  populateSelect(document.getElementById('pos-contract'));
+  document.getElementById('pos-contract').value = 'ES';
+
+  const pos = {
+    contract: document.getElementById('pos-contract'),
+    account: document.getElementById('pos-account'),
+    riskPct: document.getElementById('pos-risk-pct'),
+    stop: document.getElementById('pos-stop'),
+    hint: document.getElementById('pos-contract-hint'),
+    contracts: document.getElementById('pos-contracts'),
+    riskEach: document.getElementById('pos-risk-each'),
+    riskTotal: document.getElementById('pos-risk-total'),
+    riskPctDisplay: document.getElementById('pos-risk-pct-display'),
+    headline: document.getElementById('pos-headline'),
+    desc: document.getElementById('pos-desc')
+  };
+  function renderPos() {
+    const c = getContract(pos.contract.value);
+    if (!c) return;
+    const account = Math.max(0, parseFloat(pos.account.value) || 0);
+    const riskPct = Math.max(0, parseFloat(pos.riskPct.value) || 0);
+    const stopTicks = Math.max(1, parseInt(pos.stop.value) || 1);
+
+    pos.hint.textContent = '1 tick = ' + fmtMoney(c.tickValue);
+    const dollarsAtRisk = account * (riskPct / 100);
+    const riskPerContract = stopTicks * c.tickValue;
+    const rawContracts = riskPerContract > 0 ? dollarsAtRisk / riskPerContract : 0;
+    const contracts = Math.max(0, Math.floor(rawContracts));
+    const actualTotalRisk = contracts * riskPerContract;
+    const actualPct = account > 0 ? (actualTotalRisk / account) * 100 : 0;
+
+    pos.contracts.textContent = contracts;
+    setSplitVal(pos.riskEach, riskPerContract);
+    setSplitVal(pos.riskTotal, actualTotalRisk);
+    pos.riskPctDisplay.textContent = actualPct.toFixed(2) + '% of account';
+
+    if (contracts === 0) {
+      pos.headline.textContent = 'Stop too wide';
+      pos.desc.textContent = 'Even one contract would risk ' + fmtMoney(riskPerContract) + ', more than your ' + fmtMoney(dollarsAtRisk) + ' budget. Tighten the stop or accept the larger risk.';
+    } else {
+      pos.headline.textContent = contracts + ' contract' + (contracts > 1 ? 's' : '');
+      pos.desc.textContent = 'Sized to risk ' + fmtMoney(actualTotalRisk) + ' (' + actualPct.toFixed(2) + '% of ' + fmtMoney(account) + ') on a ' + stopTicks + '-tick stop in ' + c.sym + '.';
+    }
+  }
+  ['pos-contract', 'pos-account', 'pos-risk-pct', 'pos-stop'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderPos);
+  });
+  renderPos();
+
+  // ========== REFERENCE ==========
+  const tbody = document.getElementById('ref-tbody');
+  const catNames = { index: 'Index', energy: 'Energy', metal: 'Metal', grain: 'Grain', rate: 'Rates', fx: 'FX' };
+  function renderRef(filter) {
+    if (!filter) filter = 'all';
+    tbody.innerHTML = '';
+    let rows = CONTRACTS;
+    if (filter === 'micro') rows = rows.filter(r => r.micro);
+    else if (filter !== 'all') rows = rows.filter(r => r.cat === filter);
+    rows.forEach(c => {
+      const tr = document.createElement('tr');
+      const catLabel = catNames[c.cat] + (c.micro ? ' / micro' : '');
+      tr.innerHTML =
+        '<td class="sym">' + c.sym + '</td>' +
+        '<td>' + c.name + '</td>' +
+        '<td class="cat">' + catLabel + '</td>' +
+        '<td class="num">' + c.tickSize + '</td>' +
+        '<td class="num">' + fmtMoney(c.tickValue) + '</td>' +
+        '<td class="num">' + fmtMoney(c.pointValue) + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRef(btn.dataset.filter);
+    });
+  });
+  renderRef();
+
+  // ========== RISK / REWARD ==========
+  const rr = {
+    side: 'long',
+    mode: 'percent',
+    targets: [
+      { price: 5210, alloc: 50 },
+      { price: 5220, alloc: 25 },
+      { price: 5230, alloc: 25 }
+    ],
+    contract: document.getElementById('rr-contract'),
+    entry: document.getElementById('rr-entry'),
+    stop: document.getElementById('rr-stop'),
+    qty: document.getElementById('rr-qty'),
+    hint: document.getElementById('rr-contract-hint'),
+    targetsContainer: document.getElementById('rr-targets'),
+    addBtn: document.getElementById('rr-add-target'),
+    icon: document.getElementById('rr-icon'),
+    status: document.getElementById('rr-status'),
+    headline: document.getElementById('rr-headline'),
+    desc: document.getElementById('rr-desc'),
+    risk: document.getElementById('rr-risk'),
+    reward: document.getElementById('rr-reward'),
+    rr: document.getElementById('rr-rr'),
+    rrSub: document.getElementById('rr-rr-sub'),
+    rows: document.getElementById('rr-rows'),
+    cardRisk: document.getElementById('rr-card-risk'),
+    cardReward: document.getElementById('rr-card-reward'),
+    cardRR: document.getElementById('rr-card-rr')
+  };
+  populateSelect(rr.contract);
+  if (rr.contract) rr.contract.value = 'ES';
+
+  function renderTargetRows() {
+    if (!rr.targetsContainer) return;
+    rr.targetsContainer.innerHTML = '';
+    const allocLabel = rr.mode === 'percent' ? '% of position' : 'Contracts';
+    rr.targets.forEach((t, i) => {
+      const row = document.createElement('div');
+      row.className = 'target-row';
+      row.innerHTML =
+        '<div class="target-tag">T' + (i + 1) + '</div>' +
+        '<div><label>Price</label><input type="number" data-rr-target="price" data-i="' + i + '" value="' + t.price + '" step="0.25" /></div>' +
+        '<div><label>' + allocLabel + '</label><input type="number" data-rr-target="alloc" data-i="' + i + '" value="' + t.alloc + '" step="1" min="0" /></div>' +
+        '<button type="button" class="remove-btn" data-rr-remove="' + i + '"' + (rr.targets.length === 1 ? ' disabled' : '') + '>x</button>';
+      rr.targetsContainer.appendChild(row);
+    });
+    rr.targetsContainer.querySelectorAll('input[data-rr-target]').forEach(input => {
+      input.addEventListener('input', () => {
+        const i = parseInt(input.dataset.i);
+        const field = input.dataset.rrTarget;
+        rr.targets[i][field] = parseFloat(input.value) || 0;
+        renderRR();
+      });
+    });
+    rr.targetsContainer.querySelectorAll('[data-rr-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (rr.targets.length <= 1) return;
+        const i = parseInt(btn.dataset.rrRemove);
+        rr.targets.splice(i, 1);
+        renderTargetRows();
+        renderRR();
+      });
+    });
+    if (rr.addBtn) rr.addBtn.disabled = rr.targets.length >= 8;
+  }
+
+  if (rr.addBtn) {
+    rr.addBtn.addEventListener('click', () => {
+      const last = rr.targets[rr.targets.length - 1];
+      const c = getContract(rr.contract.value);
+      const direction = rr.side === 'long' ? 1 : -1;
+      const stepPoints = c ? c.tickSize * 20 : 5;
+      rr.targets.push({
+        price: parseFloat((last.price + (stepPoints * direction)).toFixed(4)),
+        alloc: rr.mode === 'percent' ? 25 : 1
+      });
+      renderTargetRows();
+      renderRR();
+    });
+  }
+
+  function renderRR() {
+    if (!rr.contract) return;
+    const c = getContract(rr.contract.value);
+    if (!c) return;
+    const entry = parseFloat(rr.entry.value) || 0;
+    const stop = parseFloat(rr.stop.value) || 0;
+    const totalQty = Math.max(1, parseInt(rr.qty.value) || 1);
+    const direction = rr.side === 'long' ? 1 : -1;
+
+    rr.hint.textContent = '1 tick = ' + fmtMoney(c.tickValue) + ' / ' + c.tickSize + ' pts';
+
+    const stopPoints = (entry - stop) * direction;
+    const stopTicks = stopPoints / c.tickSize;
+    const dollarsPerContractAtStop = stopTicks * c.tickValue;
+    const totalRisk = dollarsPerContractAtStop * totalQty;
+
+    let totalReward = 0;
+    let allocSum = 0;
+    const breakdown = [];
+
+    rr.targets.forEach((t, i) => {
+      const targetPoints = (t.price - entry) * direction;
+      const targetTicks = targetPoints / c.tickSize;
+      const dollarsPerContract = targetTicks * c.tickValue;
+      let qtyAtTarget = rr.mode === 'percent' ? totalQty * (t.alloc / 100) : t.alloc;
+      allocSum += rr.mode === 'percent' ? t.alloc : qtyAtTarget;
+      const dollarsAtTarget = dollarsPerContract * qtyAtTarget;
+      totalReward += dollarsAtTarget;
+      const r = totalRisk > 0 ? dollarsAtTarget / totalRisk : 0;
+      const distLabel = (targetPoints >= 0 ? '+' : '') + targetPoints.toFixed(c.tickSize < 0.01 ? 4 : 2) + ' pts';
+      const qtyLabel = (qtyAtTarget % 1 === 0 ? qtyAtTarget : qtyAtTarget.toFixed(2)) + ' c';
+      breakdown.push({ tag: 'T' + (i + 1), dist: distLabel, qty: qtyLabel, dollars: dollarsAtTarget, r });
+    });
+
+    const blendedRR = totalRisk > 0 ? totalReward / totalRisk : 0;
+    setSplitVal(rr.risk, -Math.abs(totalRisk));
+    setSplitVal(rr.reward, totalReward);
+    rr.rr.textContent = blendedRR.toFixed(2);
+    rr.cardRR.classList.toggle('positive', blendedRR >= 1);
+    rr.cardRR.classList.toggle('negative', blendedRR < 1);
+
+    rr.rows.innerHTML = '';
+    breakdown.forEach(b => {
+      const row = document.createElement('div');
+      row.className = 'rr-row';
+      const dollarsClass = b.dollars >= 0 ? 'dollars' : 'dollars neg';
+      row.innerHTML =
+        '<span class="tag">' + b.tag + '</span>' +
+        '<span class="meta">' + b.dist + '</span>' +
+        '<span class="meta">' + b.qty + '</span>' +
+        '<span class="' + dollarsClass + '">' + (b.dollars >= 0 ? '+' : '') + fmtMoney(b.dollars) + '</span>' +
+        '<span class="r">' + b.r.toFixed(2) + ' R</span>';
+      rr.rows.appendChild(row);
+    });
+
+    let breakeven = blendedRR > 0 ? (1 / (1 + blendedRR)) * 100 : 100;
+    if (totalRisk <= 0) {
+      rr.status.setAttribute('data-level', 'loss');
+      rr.icon.textContent = '!';
+      rr.headline.textContent = 'Stop on the wrong side';
+      rr.desc.textContent = 'Your stop is at or past your entry on this direction. Move it past the entry to define risk.';
+    } else if (rr.mode === 'percent' && Math.abs(allocSum - 100) > 0.5) {
+      rr.status.setAttribute('data-level', 'loss');
+      rr.icon.textContent = '!';
+      rr.headline.textContent = 'Allocations should total 100%';
+      rr.desc.textContent = 'Your target percentages currently sum to ' + allocSum.toFixed(0) + '%. Adjust them so the position fully exits.';
+    } else if (blendedRR >= 2) {
+      rr.status.setAttribute('data-level', 'safe');
+      rr.icon.textContent = 'R';
+      rr.headline.textContent = blendedRR.toFixed(2) + ' R';
+      rr.desc.textContent = 'Solid plan. Risks ' + fmtMoney(totalRisk) + ' to make ' + fmtMoney(totalReward) + ' if all targets fill. Profitable above a ' + breakeven.toFixed(0) + '% win rate.';
+    } else if (blendedRR >= 1) {
+      rr.status.setAttribute('data-level', 'safe');
+      rr.icon.textContent = 'R';
+      rr.headline.textContent = blendedRR.toFixed(2) + ' R';
+      rr.desc.textContent = 'Decent plan. Risks ' + fmtMoney(totalRisk) + ' to make ' + fmtMoney(totalReward) + '. Needs above a ' + breakeven.toFixed(0) + '% win rate to be profitable.';
+    } else {
+      rr.status.setAttribute('data-level', 'loss');
+      rr.icon.textContent = 'R';
+      rr.headline.textContent = blendedRR.toFixed(2) + ' R';
+      rr.desc.textContent = 'Below 1 R, the math gets ugly. Needs above a ' + breakeven.toFixed(0) + '% win rate just to break even. Tighten the stop or push the targets.';
+    }
+  }
+
+  ['rr-contract', 'rr-entry', 'rr-stop', 'rr-qty'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', renderRR);
+  });
+  document.querySelectorAll('[data-input="rr-side"] button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-input="rr-side"] button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      rr.side = btn.dataset.value;
+      renderRR();
+    });
+  });
+  document.querySelectorAll('[data-input="rr-mode"] button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-input="rr-mode"] button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const newMode = btn.dataset.value;
+      const totalQty = Math.max(1, parseInt(rr.qty.value) || 1);
+      if (newMode === 'contracts' && rr.mode === 'percent') {
+        rr.targets = rr.targets.map(t => ({ price: t.price, alloc: Math.max(1, Math.round(totalQty * (t.alloc / 100))) }));
+      } else if (newMode === 'percent' && rr.mode === 'contracts') {
+        const sum = rr.targets.reduce((s, t) => s + t.alloc, 0) || 1;
+        rr.targets = rr.targets.map(t => ({ price: t.price, alloc: Math.round((t.alloc / sum) * 100) }));
+      }
+      rr.mode = newMode;
+      renderTargetRows();
+      renderRR();
+    });
+  });
+  if (rr.contract) {
+    rr.contract.addEventListener('change', () => {
+      const c = getContract(rr.contract.value);
+      if (c) { rr.entry.step = c.tickSize; rr.stop.step = c.tickSize; }
+    });
+  }
+
+  renderTargetRows();
+  renderRR();
+</script>
