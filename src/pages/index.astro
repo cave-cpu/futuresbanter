@@ -1,47 +1,380 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronauts!</h1>
-			<p>
-				Welcome to the official Futures Banter <p><a href="/tools/apex-drawdown-calculator">Apex Drawdown Calculator</a></p>
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+
+      <!-- ============== HERO ============== -->
+      <section class="hero container">
+        <div class="kicker"><span class="kicker-dot"></span>Trader tools / Reviews / Real talk</div>
+        <h1>Stop squinting at <em>support docs</em>.<br>Start trading with clarity.</h1>
+        <p class="hero-sub">FuturesBanter builds tools and writes plain-English breakdowns for prop firm traders. No gurus, no fluff, no "exclusive" discount codes — just the stuff we wish existed when we started.</p>
+        <div class="hero-ctas">
+          <a href="/tools/apex-drawdown-calculator" class="btn-primary">Try the Apex Calculator</a>
+          <a href="/blog" class="btn-secondary">Read the blog</a>
+        </div>
+      </section>
+
+      <!-- ============== TOOLS GRID ============== -->
+      <section class="tools container">
+        <div class="section-head">
+          <div class="eyebrow">Trader Tools</div>
+          <h2>Calculators that <em>actually help</em></h2>
+          <p class="section-sub">Live tools for working out the numbers before you click buy. More on the way.</p>
+        </div>
+
+        <div class="tools-grid">
+          <a href="/tools/apex-drawdown-calculator" class="tool-card featured">
+            <div class="tool-tag">Live</div>
+            <h3>Apex Trailing Drawdown Calculator</h3>
+            <p>Where's your line in the sand? See your threshold, cushion, and distance to the Safety Net at a glance. Works for Intraday and EOD.</p>
+            <span class="tool-cta">Open calculator →</span>
+          </a>
+
+          <div class="tool-card disabled">
+            <div class="tool-tag pending">Soon</div>
+            <h3>Tick &amp; P&amp;L Calculator</h3>
+            <p>Convert ticks to dollars across ES, NQ, CL, GC, and the rest. Position size, contract value, and breakeven in one place.</p>
+            <span class="tool-cta">Coming soon</span>
+          </div>
+
+          <div class="tool-card disabled">
+            <div class="tool-tag pending">Soon</div>
+            <h3>Position Size Calculator</h3>
+            <p>Risk-based sizing for futures. Account size + risk % + stop distance → exact contract count. No more napkin math.</p>
+            <span class="tool-cta">Coming soon</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== RECENT POSTS ============== -->
+      {posts.length > 0 && (
+        <section class="posts container">
+          <div class="section-head">
+            <div class="eyebrow">From the blog</div>
+            <h2>Latest posts</h2>
+          </div>
+
+          <div class="posts-grid">
+            {posts.map((post) => (
+              <a href={`/blog/${post.id}/`} class="post-card">
+                <div class="post-date">
+                  <FormattedDate date={post.data.pubDate} />
+                </div>
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
+                <span class="post-cta">Read post →</span>
+              </a>
+            ))}
+          </div>
+
+          <div class="posts-foot">
+            <a href="/blog">See all posts →</a>
+          </div>
+        </section>
+      )}
+
+      <!-- ============== APEX CTA ============== -->
+      <section class="container">
+        <div class="cta-card">
+          <div class="cta-icon">◆</div>
+          <div class="cta-body">
+            <div class="cta-eyebrow">Sponsored partner</div>
+            <h3>Ready to trade real money?</h3>
+            <p>Apex funds disciplined futures traders with accounts up to $300K. If our calculator made sense to you, you know what to do next.</p>
+          </div>
+          <a href="#" class="btn-primary">Start evaluation</a>
+        </div>
+      </section>
+
+    </main>
+    <Footer />
+  </body>
 </html>
+
+<style>
+  main { padding-top: 16px; }
+
+  /* ==================== HERO ==================== */
+  .hero {
+    padding: 80px 0 64px;
+    text-align: left;
+    max-width: 980px;
+  }
+  @media (max-width: 720px) { .hero { padding: 56px 0 48px; } }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    padding: 6px 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 999px;
+  }
+  .kicker-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .hero h1 { margin-bottom: 22px; max-width: 880px; }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 640px;
+    margin-bottom: 36px;
+  }
+
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn-primary, .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14.5px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #042f2e;
+  }
+  .btn-primary:hover {
+    background: var(--accent-bright);
+    color: #042f2e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-secondary:hover {
+    background: var(--surface-hover);
+    color: var(--text-strong);
+    border-color: var(--border-accent);
+  }
+
+  /* ==================== SECTION ==================== */
+  section.container { margin-bottom: 80px; }
+  @media (max-width: 720px) { section.container { margin-bottom: 56px; } }
+
+  .section-head { margin-bottom: 36px; max-width: 720px; }
+  .section-head .eyebrow { margin-bottom: 12px; }
+  .section-head h2 { margin-bottom: 12px; }
+  .section-head h2 em { font-style: normal; color: var(--accent-bright); }
+  .section-sub { font-size: 16px; max-width: 560px; }
+
+  /* ==================== TOOLS GRID ==================== */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 960px) { .tools-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .tools-grid { grid-template-columns: 1fr; } }
+
+  .tool-card {
+    display: block;
+    padding: 28px 28px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+  }
+  .tool-card:hover:not(.disabled) {
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .tool-card.featured { border-color: var(--accent-ring); background: linear-gradient(180deg, var(--accent-bg), var(--surface) 60%); }
+  .tool-card.featured:hover { border-color: var(--accent); }
+  .tool-card.disabled { opacity: 0.65; cursor: default; }
+
+  .tool-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    padding: 3px 8px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  .tool-tag.pending {
+    color: var(--text-dim);
+    background: var(--bg-raised);
+    border-color: var(--border);
+  }
+
+  .tool-card h3 {
+    font-size: 19px;
+    margin-bottom: 10px;
+    color: var(--text-strong);
+  }
+  .tool-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin-bottom: 18px;
+  }
+  .tool-cta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-bright);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .tool-card.disabled .tool-cta { color: var(--text-dim); }
+
+  /* ==================== POSTS GRID ==================== */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 960px) { .posts-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .posts-grid { grid-template-columns: 1fr; } }
+
+  .post-card {
+    display: block;
+    padding: 24px 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .post-card:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .post-date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+  }
+  .post-card h3 {
+    font-size: 19px;
+    margin-bottom: 10px;
+    color: var(--text-strong);
+  }
+  .post-card p {
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .post-cta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-bright);
+    font-weight: 500;
+  }
+
+  .posts-foot { margin-top: 28px; }
+  .posts-foot a {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .posts-foot a:hover { color: var(--accent-bright); }
+
+  /* ==================== CTA CARD ==================== */
+  .cta-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  @media (max-width: 720px) {
+    .cta-card { flex-direction: column; align-items: flex-start; padding: 24px; }
+  }
+
+  .cta-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .cta-body { flex: 1; }
+  .cta-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .cta-card h3 {
+    font-size: 20px;
+    margin-bottom: 4px;
+    color: var(--text-strong);
+  }
+  .cta-card p {
+    font-size: 14px;
+    margin: 0;
+  }
+</style>
