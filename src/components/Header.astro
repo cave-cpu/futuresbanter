@@ -2,17 +2,41 @@
 import HeaderLink from './HeaderLink.astro';
 import TickerTape from './TickerTape.astro';
 import { SITE_TITLE } from '../consts';
+
+// Define your tools here. Add a new entry and it auto-appears in the dropdown.
+const tools = [
+  { href: '/tools/apex-drawdown-calculator', label: 'Apex Drawdown Calculator', tag: 'Apex' },
+  { href: '/tools/tick-pnl-calculator#pnl', label: 'P&L Calculator', tag: 'Trade' },
+  { href: '/tools/tick-pnl-calculator#rr', label: 'Risk / Reward Planner', tag: 'Trade' },
+  { href: '/tools/tick-pnl-calculator#position', label: 'Position Size Calculator', tag: 'Trade' },
+  { href: '/tools/tick-pnl-calculator#reference', label: 'Tick Reference', tag: 'Reference' },
+];
 ---
 
 <header>
-  <div class="container nav">
+  <div class="container row-between header-row">
     <a href="/" class="brand">
       <span class="brand-mark"></span>
       <span class="brand-text">Futures<em>Banter</em></span>
     </a>
 
     <nav class="nav-links">
-      <HeaderLink href="/tools/apex-drawdown-calculator">Tools</HeaderLink>
+      <div class="dropdown" data-dropdown>
+        <button type="button" class="dropdown-toggle" data-dropdown-toggle>
+          Tools
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="dropdown-menu" data-dropdown-menu>
+          {tools.map(t => (
+            <a href={t.href} class="dropdown-item">
+              <span class="dropdown-item-label">{t.label}</span>
+              <span class="dropdown-item-tag">{t.tag}</span>
+            </a>
+          ))}
+        </div>
+      </div>
       <HeaderLink href="/blog">Blog</HeaderLink>
       <HeaderLink href="/about">About</HeaderLink>
     </nav>
@@ -31,11 +55,11 @@ import { SITE_TITLE } from '../consts';
     top: 0;
     z-index: 50;
   }
-
-  .nav {
-    display: flex;
+  .header-row {
+	display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
     padding-top: 18px;
     padding-bottom: 18px;
   }
@@ -82,12 +106,142 @@ import { SITE_TITLE } from '../consts';
 
   .nav-links {
     display: flex;
+    align-items: center;
     gap: 8px;
     font-size: 14px;
+  }
+
+  /* Dropdown */
+  .dropdown {
+    position: relative;
+  }
+  .dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .dropdown-toggle:hover {
+    color: var(--text);
+    background: var(--surface);
+  }
+  .dropdown-toggle svg {
+    transition: transform 0.2s;
+  }
+  .dropdown.open .dropdown-toggle {
+    color: var(--accent);
+    background: var(--accent-bg);
+  }
+  .dropdown.open .dropdown-toggle svg {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 280px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 60;
+  }
+  .dropdown.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.12s;
+  }
+  .dropdown-item:hover {
+    background: var(--surface-hover);
+    color: var(--text-strong);
+  }
+  .dropdown-item-label {
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .dropdown-item-tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 999px;
+    padding: 2px 8px;
   }
 
   @media (max-width: 540px) {
     .brand-text { font-size: 16px; }
     .nav-links { gap: 4px; font-size: 13px; }
+    .dropdown-toggle { padding: 8px 10px; }
+    .dropdown-menu {
+      right: -8px;
+      min-width: 240px;
+    }
   }
 </style>
+
+<script is:inline>
+  // Dropdown behavior — click to open, click outside to close
+  document.querySelectorAll('[data-dropdown]').forEach(dropdown => {
+    const toggle = dropdown.querySelector('[data-dropdown-toggle]');
+    const menu = dropdown.querySelector('[data-dropdown-menu]');
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = dropdown.classList.contains('open');
+      // Close all other dropdowns
+      document.querySelectorAll('[data-dropdown].open').forEach(d => d.classList.remove('open'));
+      // Toggle this one
+      if (!wasOpen) dropdown.classList.add('open');
+    });
+
+    // Click inside the menu shouldn't close it (links handle that themselves)
+    menu.addEventListener('click', (e) => {
+      // If a link was clicked, let it navigate
+      if (e.target.closest('a')) return;
+      e.stopPropagation();
+    });
+  });
+
+  // Click anywhere outside closes all dropdowns
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[data-dropdown].open').forEach(d => d.classList.remove('open'));
+  });
+
+  // Escape key closes
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('[data-dropdown].open').forEach(d => d.classList.remove('open'));
+    }
+  });
+</script>

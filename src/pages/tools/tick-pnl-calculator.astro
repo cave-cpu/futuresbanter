@@ -314,6 +314,16 @@ import Footer from '../../components/Footer.astro';
         </div>
       </section>
 
+      <div class="cta">
+        <div class="cta-icon">◆</div>
+        <div class="cta-body">
+          <div class="cta-eyebrow">Sponsored</div>
+          <h4>Ready to put these tools to work?</h4>
+          <p>Apex funds disciplined futures traders with accounts up to $300K. Risk their money, not yours.</p>
+        </div>
+        <a href="/go/apex" class="cta-btn" target="_blank" rel="sponsored noopener">Start evaluation</a>
+      </div>
+
       <div class="calc-disclaimer">
         <p><strong>Not financial advice.</strong> Tick values reflect CME Group specifications as of 2026. Always verify with your broker before trading. Some contracts (DX, ZT, ZF, ZN) use fractional tick sizes; values shown are decimal equivalents.</p>
       </div>
@@ -781,12 +791,10 @@ import Footer from '../../components/Footer.astro';
     cursor: pointer;
     transition: all 0.15s;
   }
-  .add-btn:hover {
-    background: var(--accent);
-    color: #042f2e;
-  }
+  .add-btn:hover { background: var(--accent); color: #042f2e; }
   .add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .target-row {
+
+  :global(.target-row) {
     display: grid;
     grid-template-columns: auto 1fr 1fr auto;
     align-items: end;
@@ -797,7 +805,7 @@ import Footer from '../../components/Footer.astro';
     border: 1px solid var(--border);
     border-radius: 10px;
   }
-  .target-row .target-tag {
+  :global(.target-row .target-tag) {
     font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 700;
@@ -811,16 +819,36 @@ import Footer from '../../components/Footer.astro';
     place-items: center;
     min-width: 36px;
   }
-  .target-row label {
+  :global(.target-row label) {
     font-size: 11px;
     margin-bottom: 4px;
     color: var(--text-muted);
+    display: block;
   }
-  .target-row input {
+  :global(.target-row input) {
     padding: 8px 10px;
     font-size: 13px;
+    width: 100%;
+    min-width: 0;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    -moz-appearance: textfield;
   }
-  .target-row .remove-btn {
+  :global(.target-row input::-webkit-outer-spin-button),
+  :global(.target-row input::-webkit-inner-spin-button) {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  :global(.target-row input:focus) {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+  :global(.target-row .remove-btn) {
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text-dim);
@@ -833,11 +861,11 @@ import Footer from '../../components/Footer.astro';
     transition: all 0.15s;
     align-self: end;
   }
-  .target-row .remove-btn:hover {
+  :global(.target-row .remove-btn:hover) {
     border-color: var(--danger);
     color: var(--danger-bright);
   }
-  .target-row .remove-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  :global(.target-row .remove-btn:disabled) { opacity: 0.3; cursor: not-allowed; }
 
   .rr-breakdown {
     background: var(--surface);
@@ -861,7 +889,7 @@ import Footer from '../../components/Footer.astro';
     letter-spacing: 0.06em;
   }
   .rr-rows { display: flex; flex-direction: column; gap: 6px; }
-  .rr-row {
+  :global(.rr-row) {
     display: grid;
     grid-template-columns: 36px 1fr 1fr 1fr 60px;
     align-items: center;
@@ -871,12 +899,12 @@ import Footer from '../../components/Footer.astro';
     font-family: var(--font-mono);
     font-size: 13px;
   }
-  .rr-row:last-child { border-bottom: none; }
-  .rr-row .tag { color: var(--accent-bright); font-weight: 700; }
-  .rr-row .meta { color: var(--text-muted); }
-  .rr-row .dollars { color: var(--accent-bright); text-align: right; }
-  .rr-row .dollars.neg { color: var(--danger-bright); }
-  .rr-row .r { color: var(--text-strong); text-align: right; font-weight: 600; }
+  :global(.rr-row:last-child) { border-bottom: none; }
+  :global(.rr-row .tag) { color: var(--accent-bright); font-weight: 700; }
+  :global(.rr-row .meta) { color: var(--text-muted); }
+  :global(.rr-row .dollars) { color: var(--accent-bright); text-align: right; }
+  :global(.rr-row .dollars.neg) { color: var(--danger-bright); }
+  :global(.rr-row .r) { color: var(--text-strong); text-align: right; font-weight: 600; }
 
   .calc-disclaimer {
     margin-top: 56px;
@@ -886,6 +914,77 @@ import Footer from '../../components/Footer.astro';
   }
   .calc-disclaimer p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
   .calc-disclaimer strong { color: var(--text-muted); font-weight: 500; }
+  .cta {
+    margin-top: 32px;
+    padding: 28px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .cta-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid; place-items: center;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .cta-body { flex: 1; }
+  .cta-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .cta h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.25;
+    margin: 0 0 4px;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+  }
+  .cta p { color: var(--text-muted); margin: 0; font-size: 14px; }
+  .cta-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #042f2e;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 11px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .cta-btn:hover {
+    background: var(--accent-bright);
+    color: #042f2e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .cta-btn::after { content: '→'; transition: transform 0.15s; }
+  .cta-btn:hover::after { transform: translateX(2px); }
+  @media (max-width: 720px) {
+    .cta { flex-direction: column; align-items: flex-start; padding: 24px; }
+    .cta-btn { align-self: stretch; justify-content: center; }
+  }
 </style>
 
 <script is:inline>
@@ -928,17 +1027,38 @@ import Footer from '../../components/Footer.astro';
 
   const tabs = document.querySelectorAll('.tab');
   const panels = document.querySelectorAll('.panel');
+
+  function activateTab(name) {
+    let found = false;
+    tabs.forEach(t => {
+      if (t.dataset.tab === name) {
+        t.classList.add('active');
+        found = true;
+      } else {
+        t.classList.remove('active');
+      }
+    });
+    panels.forEach(p => {
+      if (p.dataset.panel === name) p.removeAttribute('hidden');
+      else p.setAttribute('hidden', '');
+    });
+    return found;
+  }
+
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const target = tab.dataset.tab;
-      panels.forEach(p => {
-        if (p.dataset.panel === target) p.removeAttribute('hidden');
-        else p.setAttribute('hidden', '');
-      });
+      activateTab(tab.dataset.tab);
+      // Update the URL hash without reloading, so the user can share the tab they're on
+      history.replaceState(null, '', '#' + tab.dataset.tab);
     });
   });
+
+  // On initial load, check if the URL has a hash like #rr or #position
+  // If so, open that tab directly. Otherwise default to PnL.
+  const initialTab = window.location.hash.replace('#', '');
+  if (initialTab && !activateTab(initialTab)) {
+    activateTab('pnl');
+  }
 
   function populateSelect(selectEl) {
     if (!selectEl) return;
@@ -1186,7 +1306,7 @@ import Footer from '../../components/Footer.astro';
       row.className = 'target-row';
       row.innerHTML =
         '<div class="target-tag">T' + (i + 1) + '</div>' +
-        '<div><label>Price</label><input type="number" data-rr-target="price" data-i="' + i + '" value="' + t.price + '" step="0.25" /></div>' +
+        '<div><label>Price</label><input type="number" data-rr-target="price" data-i="' + i + '" value="' + t.price + '" step="' + (getContract(rr.contract.value)?.tickSize || 0.25) + '" /></div>' +
         '<div><label>' + allocLabel + '</label><input type="number" data-rr-target="alloc" data-i="' + i + '" value="' + t.alloc + '" step="1" min="0" /></div>' +
         '<button type="button" class="remove-btn" data-rr-remove="' + i + '"' + (rr.targets.length === 1 ? ' disabled' : '') + '>x</button>';
       rr.targetsContainer.appendChild(row);
@@ -1343,6 +1463,8 @@ import Footer from '../../components/Footer.astro';
     rr.contract.addEventListener('change', () => {
       const c = getContract(rr.contract.value);
       if (c) { rr.entry.step = c.tickSize; rr.stop.step = c.tickSize; }
+      renderTargetRows();
+      renderRR();
     });
   }
 
