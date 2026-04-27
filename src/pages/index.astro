@@ -31,30 +31,62 @@ const posts = (await getCollection('blog'))
         </div>
       </section>
 
-      <!-- ============== TOOLS GRID ============== -->
-      <section class="tools container">
-        <div class="section-head">
-          <div class="eyebrow">Trader Tools</div>
-          <h2>Calculators that <em>actually help</em></h2>
-          <p class="section-sub">Live tools for working out the numbers before you click buy. More on the way.</p>
-        </div>
+<!-- ============== TOOLS GRID ============== -->
+<div class="container">
+  <section class="tools-section">
+    <div class="tools-head">
+      <div class="eyebrow"><span class="eyebrow-dot"></span>Trader Tools</div>
+      <h2>Free calculators, no fluff</h2>
+      <p>Built by a trader, for traders. Plug in your numbers, get a real answer. Bookmark whichever you'll come back to.</p>
+    </div>
 
-        <div class="tools-grid">
-          <a href="/tools/apex-drawdown-calculator" class="tool-card featured">
-            <div class="tool-tag">Live</div>
-            <h3>Apex Trailing Drawdown Calculator</h3>
-            <p>Where's your line in the sand? See your threshold, cushion, and distance to the Safety Net at a glance. Works for Intraday and EOD.</p>
-            <span class="tool-cta">Open calculator →</span>
-          </a>
+    <div class="tools-grid">
 
-          <a href="/tools/tick-pnl-calculator" class="tool-card">
-  <div class="tool-tag">Live</div>
-  <h3>Tick &amp; P&amp;L Calculator</h3>
-  <p>Convert ticks to dollars across 30+ contracts — ES, NQ, CL, GC, micros, grains, FX. P&amp;L, tick reference, and position sizing in one place.</p>
-  <span class="tool-cta">Open calculator →</span>
-</a>
-        </div>
-      </section>
+      <a href="/tools/apex-drawdown-calculator" class="tool-card">
+        <div class="tool-tag">Apex</div>
+        <h3>Apex Drawdown Calculator</h3>
+        <p>See your real-time threshold, distance to Safety Net, and live cushion for both EOD and Intraday accounts. The first tool every Apex trader needs.</p>
+        <span class="tool-cta">Open calculator →</span>
+      </a>
+
+      <a href="/tools/apex-consistency-checker" class="tool-card">
+        <div class="tool-tag">Apex</div>
+        <h3>Apex Consistency Checker</h3>
+        <p>Can you actually request a payout right now? Check the 50% rule (or legacy 30%), Safety Net threshold, and minimum profit in one place. Updated for Apex 4.0.</p>
+        <span class="tool-cta">Open checker →</span>
+      </a>
+
+      <a href="/tools/tick-pnl-calculator#pnl" class="tool-card">
+        <div class="tool-tag">Trade</div>
+        <h3>P&amp;L Calculator</h3>
+        <p>Run a P&amp;L on any trade across 30+ futures contracts. Long or short, contracts, commissions, all the math in one place.</p>
+        <span class="tool-cta">Run a trade →</span>
+      </a>
+
+      <a href="/tools/tick-pnl-calculator#rr" class="tool-card">
+        <div class="tool-tag">Trade</div>
+        <h3>Risk / Reward Planner</h3>
+        <p>Plan a setup with multiple targets and partial exits. Get blended R/R for the whole plan and breakeven win rate before you click buy.</p>
+        <span class="tool-cta">Plan a trade →</span>
+      </a>
+
+      <a href="/tools/tick-pnl-calculator#position" class="tool-card">
+        <div class="tool-tag">Trade</div>
+        <h3>Position Size Calculator</h3>
+        <p>How many contracts should you trade? Plug in your account, risk %, and stop in ticks — the math gives you the answer for any contract.</p>
+        <span class="tool-cta">Size a trade →</span>
+      </a>
+
+      <a href="/tools/tick-pnl-calculator#reference" class="tool-card">
+        <div class="tool-tag">Reference</div>
+        <h3>Tick Reference Table</h3>
+        <p>Every supported contract's tick size, tick value, and point value in one searchable table. Bookmark it as a cheat sheet.</p>
+        <span class="tool-cta">Open reference →</span>
+      </a>
+
+    </div>
+  </section>
+</div>
 
       <!-- ============== RECENT POSTS ============== -->
       {posts.length > 0 && (
@@ -198,10 +230,16 @@ const posts = (await getCollection('blog'))
 
   /* ==================== TOOLS GRID ==================== */
   .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1024px) {
+  .tools-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .tools-grid { grid-template-columns: 1fr; }
+}
   @media (max-width: 960px) { .tools-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) { .tools-grid { grid-template-columns: 1fr; } }
 
