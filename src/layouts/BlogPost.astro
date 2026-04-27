@@ -1,86 +1,297 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 ---
 
+<!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<head>
+  <BaseHead title={title} description={description} />
+</head>
+<body>
+  <Header />
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
+  <main>
+    <article>
+
+      <header class="post-header">
+        <div class="container">
+          <a href="/blog" class="back-link">← All posts</a>
+          <div class="post-header-inner">
+            <div class="post-meta">
+              <FormattedDate date={pubDate} />
+              {updatedDate && (
+                <span class="updated">· Last updated <FormattedDate date={updatedDate} /></span>
+              )}
+            </div>
+            <h1>{title}</h1>
+            <p class="post-lede">{description}</p>
+          </div>
+        </div>
+        {heroImage && (
+          <div class="container">
+            <div class="hero-image">
+              <img src={heroImage} alt="" />
+            </div>
+          </div>
+        )}
+      </header>
+
+      <div class="container">
+        <div class="prose">
+          <slot />
+        </div>
+
+        <div class="post-footer">
+          <a href="/blog" class="back-link">← Back to all posts</a>
+        </div>
+      </div>
+
+    </article>
+  </main>
+
+  <Footer />
+</body>
 </html>
+
+<style>
+  article { padding: 24px 0 64px; }
+
+  .post-header {
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .post-header-inner {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-bottom: 24px;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .post-meta .updated { color: var(--text-dim); }
+
+  .post-header h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--text-strong);
+    margin-bottom: 18px;
+  }
+
+  .post-lede {
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    max-width: 720px;
+  }
+
+  .hero-image {
+    max-width: 1080px;
+    margin: 32px auto 0;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Prose styles for post body — overrides global.css with post-specific tweaks */
+  :global(.prose) {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  :global(.prose > *:first-child) { margin-top: 0; }
+  :global(.prose > *:last-child) { margin-bottom: 0; }
+
+  :global(.prose h2) {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-top: 56px;
+    margin-bottom: 18px;
+    color: var(--text-strong);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  :global(.prose h3) {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-top: 40px;
+    margin-bottom: 14px;
+    color: var(--text-strong);
+  }
+  :global(.prose h4) {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 32px;
+    margin-bottom: 10px;
+    color: var(--text-strong);
+  }
+
+  :global(.prose p) {
+    margin: 0 0 22px;
+    color: var(--text);
+  }
+
+  :global(.prose ul),
+  :global(.prose ol) {
+    margin: 0 0 22px;
+    padding-left: 26px;
+    color: var(--text);
+  }
+  :global(.prose li) {
+    margin-bottom: 8px;
+  }
+  :global(.prose li::marker) { color: var(--accent); }
+
+  :global(.prose a) {
+    color: var(--accent-bright);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-ring);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.15s;
+  }
+  :global(.prose a:hover) {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  :global(.prose strong) {
+    color: var(--text-strong);
+    font-weight: 600;
+  }
+
+  :global(.prose blockquote) {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    color: var(--text);
+    font-style: normal;
+  }
+  :global(.prose blockquote p) {
+    margin-bottom: 0;
+    color: var(--text);
+  }
+
+  :global(.prose code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--bg-raised);
+    padding: 2px 7px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    color: var(--accent-bright);
+  }
+  :global(.prose pre) {
+    margin: 28px 0;
+    padding: 20px 24px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  :global(.prose pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text);
+    font-size: inherit;
+  }
+
+  :global(.prose img) {
+    border-radius: 12px;
+    margin: 28px 0;
+    border: 1px solid var(--border);
+  }
+
+  :global(.prose hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  :global(.prose table) {
+    width: 100%;
+    margin: 28px 0;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  :global(.prose table th) {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  :global(.prose table td) {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .post-footer {
+    max-width: 720px;
+    margin: 64px auto 0;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .post-header h1 { font-size: 32px; }
+    .post-lede { font-size: 17px; }
+    :global(.prose) { font-size: 16.5px; }
+    :global(.prose h2) { font-size: 24px; margin-top: 44px; }
+    :global(.prose h3) { font-size: 20px; }
+  }
+</style>
