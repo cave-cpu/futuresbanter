@@ -1,0 +1,1033 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <BaseHead
+    title="Apex Consistency Rule Checker — Can You Request a Payout?"
+    description="Free Apex Trader Funding consistency rule checker. Updated for the March 2026 50% rule with legacy 30% support. Plus Safety Net check so you know if you're really clear to request a payout."
+  />
+</head>
+<body>
+  <Header />
+
+  <main>
+    <div class="container calc-page">
+
+      <section class="calc-hero">
+        <div class="kicker"><span class="kicker-dot"></span>Trader Tools / 003</div>
+        <h1>Apex <em>Consistency Rule</em> Checker</h1>
+        <p class="subtitle">Can you actually request a payout right now? Run your numbers against the 50% rule (current) or the legacy 30% rule, and check the Safety Net threshold while you're at it.</p>
+      </section>
+
+      <div class="panel-grid">
+
+        <!-- Inputs -->
+        <div class="card inputs">
+          <h2 class="section-label">Account Setup</h2>
+
+          <div class="field">
+            <label>Account Size</label>
+            <div class="segmented account-segmented" data-input="account">
+              <button type="button" data-value="25000">$25K</button>
+              <button type="button" data-value="50000" class="active">$50K</button>
+              <button type="button" data-value="75000">$75K</button>
+              <button type="button" data-value="100000">$100K</button>
+              <button type="button" data-value="150000">$150K</button>
+              <button type="button" data-value="250000">$250K</button>
+              <button type="button" data-value="300000">$300K</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Consistency Rule
+              <button type="button" id="legacy-link" class="legacy-link">on a legacy account?</button>
+            </label>
+            <div class="segmented" data-input="rule">
+              <button type="button" data-value="50" class="active">50% (Current)</button>
+              <button type="button" data-value="30">30% (Legacy)</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2 class="section-label">Profit Mode</h2>
+
+          <div class="field">
+            <div class="segmented" data-input="mode">
+              <button type="button" data-value="simple" class="active">Simple</button>
+              <button type="button" data-value="detailed">Day-by-Day</button>
+            </div>
+            <div class="field-hint" id="mode-hint">Just enter your biggest day and total profit.</div>
+          </div>
+
+          <!-- Simple inputs -->
+          <div data-mode="simple">
+            <div class="field">
+              <label>Biggest Single-Day Profit <span class="hint">since last payout</span></label>
+              <div class="dollar-input"><input type="number" id="biggest-day" value="1500" step="50" min="0" /></div>
+            </div>
+
+            <div class="field">
+              <label>Total Profit <span class="hint">since last payout</span></label>
+              <div class="dollar-input"><input type="number" id="total-profit" value="3500" step="100" min="0" /></div>
+            </div>
+          </div>
+
+          <!-- Detailed inputs -->
+          <div data-mode="detailed" hidden>
+            <div class="days-head">
+              <span class="days-label">Daily P&amp;L</span>
+              <button type="button" id="add-day" class="add-btn">+ Add day</button>
+            </div>
+            <div id="days-container"></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field">
+            <label>Current Account Balance <span class="hint">for Safety Net check</span></label>
+            <div class="dollar-input"><input type="number" id="current-balance" value="53500" step="100" min="0" /></div>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="results">
+
+          <!-- Verdict banner -->
+          <div class="status" data-level="safe" id="verdict-status">
+            <div class="status-icon" id="verdict-icon">✓</div>
+            <div class="content">
+              <div class="status-eyebrow" id="verdict-eyebrow">Payout Eligibility</div>
+              <div class="headline" id="verdict-headline">Clear to request</div>
+              <div class="desc" id="verdict-desc">Your biggest day is 42.86% of total profit (under the 50% threshold) and your balance is above the Safety Net.</div>
+            </div>
+          </div>
+
+          <!-- Number cards -->
+          <div class="numbers">
+            <div class="number" id="card-percent">
+              <div class="lbl">Biggest Day %</div>
+              <div class="val" id="num-percent">42.86<span class="dollar">%</span></div>
+              <div class="sub" id="num-percent-sub">of total profit</div>
+            </div>
+            <div class="number" id="card-needed">
+              <div class="lbl">Profit Needed</div>
+              <div class="val" id="num-needed">$0<span class="dollar">.00</span></div>
+              <div class="sub" id="num-needed-sub">to clear consistency</div>
+            </div>
+            <div class="number" id="card-safety">
+              <div class="lbl">Safety Net</div>
+              <div class="val" id="num-safety"><span class="dollar">$</span>52,600</div>
+              <div class="sub" id="num-safety-sub">required threshold</div>
+            </div>
+          </div>
+
+          <!-- Detail breakdown -->
+          <div class="checks">
+            <div class="check" id="check-consistency">
+              <div class="check-icon" id="check-consistency-icon">✓</div>
+              <div class="check-body">
+                <div class="check-title" id="check-consistency-title">Consistency rule passed</div>
+                <div class="check-desc" id="check-consistency-desc">$1,500 ÷ $3,500 = 42.86%, under the 50% threshold.</div>
+              </div>
+            </div>
+
+            <div class="check" id="check-safety">
+              <div class="check-icon" id="check-safety-icon">✓</div>
+              <div class="check-body">
+                <div class="check-title" id="check-safety-title">Safety Net cleared</div>
+                <div class="check-desc" id="check-safety-desc">Balance of $53,500 exceeds the $52,600 Safety Net threshold.</div>
+              </div>
+            </div>
+
+            <div class="check" id="check-minimum">
+              <div class="check-icon" id="check-minimum-icon">✓</div>
+              <div class="check-body">
+                <div class="check-title" id="check-minimum-title">Above minimum payout</div>
+                <div class="check-desc" id="check-minimum-desc">$500 minimum payout is allowed once you meet the other thresholds.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Explainer -->
+          <div class="explainer">
+            <div class="explainer-eyebrow">How the rule works</div>
+            <p>The <strong>consistency rule</strong> means no single trading day can be more than 50% (current) or 30% (legacy) of your total profit when you request a payout. To <strong>dilute</strong> a big day, keep trading and add to your total profit until the percentage drops below the threshold.</p>
+            <p>The <strong>Safety Net</strong> applies to your first 3 payouts only: account drawdown + $100. For a $50K account, that's $52,600 minimum balance. After payout 3, this requirement drops away.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sponsored CTA -->
+      <div class="cta">
+        <div class="cta-icon">◆</div>
+        <div class="cta-body">
+          <div class="cta-eyebrow">Sponsored</div>
+          <h4>Not funded yet?</h4>
+          <p>Apex's evaluation is one of the most lenient in the industry. Pass once, get up to $150K of buying power. Use this tool the day you start your PA.</p>
+        </div>
+        <a href="/go/apex" class="cta-btn" target="_blank" rel="sponsored noopener">Start evaluation</a>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="calc-disclaimer">
+        <p><strong>Not financial advice or affiliated with Apex.</strong> Rules verified against Apex's official support docs as of 2026. The 50% rule applies to accounts purchased March 2026 onward; the 30% rule remains active for accounts purchased before that. Always verify with Apex's compliance team before requesting a payout. The Safety Net requirement applies to your first 3 payouts only.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <Footer />
+</body>
+</html>
+
+<style>
+  .calc-page { padding-top: 24px; }
+
+  .calc-hero {
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding: 6px 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 999px;
+  }
+  .kicker-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .calc-hero h1 { margin-bottom: 18px; max-width: 900px; }
+  .calc-hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .panel-grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .inputs {
+    padding: 28px;
+    position: sticky;
+    top: 124px;
+  }
+  @media (max-width: 960px) {
+    .inputs { position: static; padding: 24px; }
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-hint {
+    margin-top: 8px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+  label .hint {
+    color: var(--text-dim);
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  .legacy-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-decoration-color: var(--accent-ring);
+    text-underline-offset: 3px;
+    font-family: var(--font-body);
+    transition: color 0.15s;
+  }
+  .legacy-link:hover { color: var(--accent-bright); }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .account-segmented {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .segmented button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 9px 10px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .segmented button:hover:not(.active) { color: var(--text); background: var(--surface-hover); }
+  .segmented button.active {
+    background: var(--surface-2);
+    color: var(--text-strong);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 0 0 1px var(--border-accent);
+  }
+
+  input[type="number"] {
+    width: 100%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 11px 14px;
+    transition: all 0.15s;
+  }
+  input[type="number"]:hover { border-color: var(--border-strong); }
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+  .dollar-input { position: relative; }
+  .dollar-input::before {
+    content: '$';
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .dollar-input input { padding-left: 28px; }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  .divider { height: 1px; background: var(--border); margin: 22px -28px; }
+  @media (max-width: 960px) { .divider { margin: 20px -24px; } }
+
+  /* Day-by-day */
+  .days-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .days-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .add-btn {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    color: var(--accent-bright);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .add-btn:hover { background: var(--accent); color: #042f2e; }
+  .add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  :global(.day-row) {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  :global(.day-row .day-tag) {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-bright);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    border-radius: 6px;
+    padding: 7px 9px;
+    min-width: 36px;
+    text-align: center;
+  }
+  :global(.day-row .day-input) {
+    position: relative;
+  }
+  :global(.day-row .day-input::before) {
+    content: '$';
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    pointer-events: none;
+  }
+  :global(.day-row input) {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 10px 7px 22px;
+    -moz-appearance: textfield;
+  }
+  :global(.day-row input::-webkit-inner-spin-button),
+  :global(.day-row input::-webkit-outer-spin-button) { -webkit-appearance: none; margin: 0; }
+  :global(.day-row input:focus) {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-ring);
+  }
+  :global(.day-row .remove-btn) {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 28px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    transition: all 0.15s;
+  }
+  :global(.day-row .remove-btn:hover) {
+    border-color: var(--danger);
+    color: var(--danger-bright);
+  }
+  :global(.day-row .remove-btn:disabled) { opacity: 0.3; cursor: not-allowed; }
+
+  /* Results */
+  .results { display: flex; flex-direction: column; gap: 16px; }
+
+  .status {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .status::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+  .status-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--accent);
+  }
+  .status-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .status .headline {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+  }
+  .status .desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-width: 540px;
+  }
+  .status[data-level="loss"]::before { background: var(--danger); }
+  .status[data-level="loss"] .status-icon {
+    background: var(--danger-bg); border-color: var(--danger-ring); color: var(--danger);
+  }
+  .status[data-level="loss"] .headline { color: var(--danger-bright); }
+  .status[data-level="warn"]::before { background: var(--warn); }
+  .status[data-level="warn"] .status-icon {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.22);
+    color: var(--warn);
+  }
+  .status[data-level="warn"] .headline { color: var(--warn); }
+
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 720px) { .numbers { grid-template-columns: 1fr; } }
+  .number {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .number .lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .number .val {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: -0.025em;
+    color: var(--text-strong);
+    line-height: 1;
+  }
+  .number .val .dollar {
+    color: var(--text-dim);
+    font-size: 17px;
+    font-weight: 500;
+    margin-right: 1px;
+  }
+  .number .sub { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .number.pass .val { color: var(--accent-bright); }
+  .number.fail .val { color: var(--danger-bright); }
+
+  /* Checks */
+  .checks {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .check:last-child { border-bottom: none; }
+  .check-icon {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+    margin-top: 1px;
+  }
+  .check[data-level="fail"] .check-icon {
+    background: var(--danger-bg);
+    border-color: var(--danger-ring);
+    color: var(--danger);
+  }
+  .check[data-level="warn"] .check-icon {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.22);
+    color: var(--warn);
+  }
+  .check-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-strong);
+    margin-bottom: 3px;
+  }
+  .check-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .explainer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .explainer-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .explainer p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 12px;
+    line-height: 1.6;
+  }
+  .explainer p:last-child { margin-bottom: 0; }
+  .explainer p strong { color: var(--text); font-weight: 600; }
+
+  /* Sponsored CTA */
+  .cta {
+    margin-top: 32px;
+    padding: 28px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .cta-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-ring);
+    display: grid; place-items: center;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .cta-body { flex: 1; }
+  .cta-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .cta h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.25;
+    margin: 0 0 4px;
+    color: var(--text-strong);
+    letter-spacing: -0.015em;
+  }
+  .cta p { color: var(--text-muted); margin: 0; font-size: 14px; }
+  .cta-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #042f2e;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 11px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .cta-btn:hover {
+    background: var(--accent-bright);
+    color: #042f2e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .cta-btn::after { content: '→'; transition: transform 0.15s; }
+  .cta-btn:hover::after { transform: translateX(2px); }
+  @media (max-width: 720px) {
+    .cta { flex-direction: column; align-items: flex-start; padding: 24px; }
+    .cta-btn { align-self: stretch; justify-content: center; }
+  }
+
+  .calc-disclaimer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    max-width: 760px;
+  }
+  .calc-disclaimer p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .calc-disclaimer strong { color: var(--text-muted); font-weight: 500; }
+</style>
+
+<script is:inline>
+  // Apex drawdown by account size (used for Safety Net calc)
+  const DRAWDOWNS = {
+    25000: 1500,
+    50000: 2500,
+    75000: 2750,
+    100000: 3000,
+    150000: 5000,
+    250000: 6500,
+    300000: 7500
+  };
+
+  const state = {
+    accountSize: 50000,
+    rule: 50,
+    mode: 'simple',
+    biggestDay: 1500,
+    totalProfit: 3500,
+    currentBalance: 53500,
+    days: [
+      { value: 800 },
+      { value: 1500 },
+      { value: 600 },
+      { value: 600 }
+    ]
+  };
+
+  // Format helpers
+  const fmtMoney = (n) => {
+    const r = Math.abs(n);
+    const s = r.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return (n < 0 ? '-$' : '$') + s;
+  };
+  const splitMoney = (n) => {
+    const r = Math.abs(n);
+    const whole = Math.trunc(r).toLocaleString('en-US');
+    const decimal = (r - Math.trunc(r)).toFixed(2).slice(1);
+    const sign = n < 0 ? '-' : '';
+    return { sign, whole, decimal };
+  };
+  function setDollarVal(el, n) {
+    const parts = splitMoney(n);
+    el.innerHTML = parts.sign + '<span class="dollar">$</span>' + parts.whole + '<span class="dollar">' + parts.decimal + '</span>';
+  }
+
+  // Segmented controls
+  document.querySelectorAll('[data-input]').forEach(group => {
+    const key = group.dataset.input;
+    group.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const value = btn.dataset.value;
+        if (key === 'account') state.accountSize = parseInt(value);
+        else if (key === 'rule') state.rule = parseInt(value);
+        else if (key === 'mode') {
+          state.mode = value;
+          document.querySelector('[data-mode="simple"]').toggleAttribute('hidden', value !== 'simple');
+          document.querySelector('[data-mode="detailed"]').toggleAttribute('hidden', value !== 'detailed');
+          const hint = document.getElementById('mode-hint');
+          hint.textContent = value === 'simple'
+            ? 'Just enter your biggest day and total profit.'
+            : 'Add each trading day. We\'ll find your biggest one and total it up.';
+        }
+        render();
+      });
+    });
+  });
+
+  // Legacy link
+  document.getElementById('legacy-link').addEventListener('click', () => {
+    document.querySelectorAll('[data-input="rule"] button').forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-input="rule"] button[data-value="30"]').classList.add('active');
+    state.rule = 30;
+    render();
+  });
+
+  // Simple mode inputs
+  document.getElementById('biggest-day').addEventListener('input', e => {
+    state.biggestDay = parseFloat(e.target.value) || 0;
+    render();
+  });
+  document.getElementById('total-profit').addEventListener('input', e => {
+    state.totalProfit = parseFloat(e.target.value) || 0;
+    render();
+  });
+  document.getElementById('current-balance').addEventListener('input', e => {
+    state.currentBalance = parseFloat(e.target.value) || 0;
+    render();
+  });
+
+  // Detailed mode
+  const daysContainer = document.getElementById('days-container');
+  const addDayBtn = document.getElementById('add-day');
+
+  function renderDays() {
+    daysContainer.innerHTML = '';
+    state.days.forEach((d, i) => {
+      const row = document.createElement('div');
+      row.className = 'day-row';
+      row.innerHTML =
+        '<div class="day-tag">D' + (i + 1) + '</div>' +
+        '<div class="day-input"><input type="number" data-day-i="' + i + '" value="' + d.value + '" step="50" /></div>' +
+        '<button type="button" class="remove-btn" data-day-remove="' + i + '"' + (state.days.length === 1 ? ' disabled' : '') + '>x</button>';
+      daysContainer.appendChild(row);
+    });
+
+    daysContainer.querySelectorAll('input[data-day-i]').forEach(input => {
+      input.addEventListener('input', () => {
+        const i = parseInt(input.dataset.dayI);
+        state.days[i].value = parseFloat(input.value) || 0;
+        render();
+      });
+    });
+    daysContainer.querySelectorAll('[data-day-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (state.days.length <= 1) return;
+        const i = parseInt(btn.dataset.dayRemove);
+        state.days.splice(i, 1);
+        renderDays();
+        render();
+      });
+    });
+
+    addDayBtn.disabled = state.days.length >= 30;
+  }
+
+  addDayBtn.addEventListener('click', () => {
+    state.days.push({ value: 500 });
+    renderDays();
+    render();
+  });
+
+  function getProfitData() {
+    if (state.mode === 'simple') {
+      return { biggest: state.biggestDay, total: state.totalProfit };
+    } else {
+      // Detailed mode: find biggest single day, sum all days for total
+      const positives = state.days.filter(d => d.value > 0).map(d => d.value);
+      const biggest = positives.length > 0 ? Math.max(...positives) : 0;
+      const total = state.days.reduce((s, d) => s + (d.value || 0), 0);
+      return { biggest, total };
+    }
+  }
+
+  function render() {
+    const { biggest, total } = getProfitData();
+    const drawdown = DRAWDOWNS[state.accountSize] || 2500;
+    const safetyNet = state.accountSize + drawdown + 100;
+
+    // Consistency check
+    const pct = total > 0 ? (biggest / total) * 100 : (biggest > 0 ? 100 : 0);
+    const threshold = state.rule;
+    const consistencyPass = total > 0 && pct <= threshold;
+    // Profit needed to dilute biggest day below threshold:
+    // biggest / requiredTotal <= threshold/100
+    // requiredTotal >= biggest * 100 / threshold
+    const requiredTotal = biggest > 0 ? biggest * 100 / threshold : 0;
+    const profitNeeded = Math.max(0, requiredTotal - total);
+
+    // Safety Net check
+    const safetyPass = state.currentBalance >= safetyNet;
+    const safetyShortfall = Math.max(0, safetyNet - state.currentBalance);
+
+    // Minimum payout check ($500 above safety net or $500 minimum allowed)
+    const minimumPass = state.currentBalance > state.accountSize;
+
+    // Update number cards
+    document.getElementById('num-percent').innerHTML = pct.toFixed(2) + '<span class="dollar">%</span>';
+    document.getElementById('num-percent-sub').textContent = total > 0
+      ? 'of ' + fmtMoney(total) + ' total profit'
+      : 'no profit yet';
+    document.getElementById('card-percent').classList.toggle('pass', consistencyPass);
+    document.getElementById('card-percent').classList.toggle('fail', !consistencyPass && total > 0);
+
+    setDollarVal(document.getElementById('num-needed'), profitNeeded);
+    document.getElementById('num-needed-sub').textContent = profitNeeded > 0
+      ? 'more profit to reach ' + threshold + '%'
+      : 'consistency cleared';
+    document.getElementById('card-needed').classList.toggle('pass', profitNeeded === 0);
+    document.getElementById('card-needed').classList.toggle('fail', profitNeeded > 0);
+
+    setDollarVal(document.getElementById('num-safety'), safetyNet);
+    document.getElementById('num-safety-sub').textContent = state.currentBalance >= safetyNet
+      ? 'cleared by ' + fmtMoney(state.currentBalance - safetyNet)
+      : 'short by ' + fmtMoney(safetyNet - state.currentBalance);
+    document.getElementById('card-safety').classList.toggle('pass', safetyPass);
+    document.getElementById('card-safety').classList.toggle('fail', !safetyPass);
+
+    // Update detail checks
+    const consistencyEl = document.getElementById('check-consistency');
+    const consistencyIconEl = document.getElementById('check-consistency-icon');
+    if (total === 0) {
+      consistencyEl.setAttribute('data-level', 'warn');
+      consistencyIconEl.textContent = '?';
+      document.getElementById('check-consistency-title').textContent = 'No profit entered yet';
+      document.getElementById('check-consistency-desc').textContent = 'Add your trading days or biggest profit day to check.';
+    } else if (consistencyPass) {
+      consistencyEl.setAttribute('data-level', 'pass');
+      consistencyIconEl.textContent = '✓';
+      document.getElementById('check-consistency-title').textContent = 'Consistency rule passed';
+      document.getElementById('check-consistency-desc').textContent =
+        fmtMoney(biggest) + ' / ' + fmtMoney(total) + ' = ' + pct.toFixed(2) + '%, under the ' + threshold + '% threshold.';
+    } else {
+      consistencyEl.setAttribute('data-level', 'fail');
+      consistencyIconEl.textContent = '✕';
+      document.getElementById('check-consistency-title').textContent = 'Consistency rule failed';
+      document.getElementById('check-consistency-desc').textContent =
+        'Biggest day is ' + pct.toFixed(2) + '% (limit ' + threshold + '%). Need ' + fmtMoney(profitNeeded) + ' more profit to dilute, OR your biggest day must drop to ' + fmtMoney(total * threshold / 100) + ' or less.';
+    }
+
+    const safetyEl = document.getElementById('check-safety');
+    const safetyIconEl = document.getElementById('check-safety-icon');
+    if (safetyPass) {
+      safetyEl.setAttribute('data-level', 'pass');
+      safetyIconEl.textContent = '✓';
+      document.getElementById('check-safety-title').textContent = 'Safety Net cleared';
+      document.getElementById('check-safety-desc').textContent =
+        'Balance of ' + fmtMoney(state.currentBalance) + ' exceeds the ' + fmtMoney(safetyNet) + ' Safety Net (drawdown ' + fmtMoney(drawdown) + ' + $100). Applies to first 3 payouts only.';
+    } else {
+      safetyEl.setAttribute('data-level', 'fail');
+      safetyIconEl.textContent = '✕';
+      document.getElementById('check-safety-title').textContent = 'Below Safety Net';
+      document.getElementById('check-safety-desc').textContent =
+        'Balance of ' + fmtMoney(state.currentBalance) + ' is short by ' + fmtMoney(safetyShortfall) + '. Need ' + fmtMoney(safetyNet) + ' minimum for payouts 1-3.';
+    }
+
+    const minEl = document.getElementById('check-minimum');
+    const minIconEl = document.getElementById('check-minimum-icon');
+    if (minimumPass) {
+      minEl.setAttribute('data-level', 'pass');
+      minIconEl.textContent = '✓';
+      document.getElementById('check-minimum-title').textContent = 'Above starting balance';
+      document.getElementById('check-minimum-desc').textContent =
+        'You\'re ' + fmtMoney(state.currentBalance - state.accountSize) + ' in profit. The minimum payout amount is $500 once other gates clear.';
+    } else {
+      minEl.setAttribute('data-level', 'warn');
+      minIconEl.textContent = '!';
+      document.getElementById('check-minimum-title').textContent = 'Below starting balance';
+      document.getElementById('check-minimum-desc').textContent =
+        'Account is at or below the ' + fmtMoney(state.accountSize) + ' starting balance. You can\'t request a payout until you\'re in profit.';
+    }
+
+    // Verdict banner
+    const verdictEl = document.getElementById('verdict-status');
+    const verdictIconEl = document.getElementById('verdict-icon');
+    const allPass = consistencyPass && safetyPass && minimumPass;
+    const noData = total === 0 && state.currentBalance === state.accountSize;
+
+    if (noData) {
+      verdictEl.setAttribute('data-level', 'warn');
+      verdictIconEl.textContent = '?';
+      document.getElementById('verdict-headline').textContent = 'Enter your numbers';
+      document.getElementById('verdict-desc').textContent = 'Add your profit and balance details to see if you\'re clear to request.';
+    } else if (allPass) {
+      verdictEl.setAttribute('data-level', 'safe');
+      verdictIconEl.textContent = '✓';
+      document.getElementById('verdict-headline').textContent = 'Clear to request a payout';
+      document.getElementById('verdict-desc').textContent =
+        'Consistency at ' + pct.toFixed(2) + '% (under ' + threshold + '%), balance above Safety Net, account in profit. You can request from $500 up to your payout cap.';
+    } else {
+      verdictEl.setAttribute('data-level', 'loss');
+      verdictIconEl.textContent = '✕';
+      const reasons = [];
+      if (!consistencyPass) reasons.push('consistency rule');
+      if (!safetyPass) reasons.push('Safety Net');
+      if (!minimumPass) reasons.push('minimum profit');
+      document.getElementById('verdict-headline').textContent = 'Not clear yet';
+      document.getElementById('verdict-desc').textContent =
+        'Failing: ' + reasons.join(', ') + '. See the breakdown below for what needs to change.';
+    }
+  }
+
+  renderDays();
+  render();
+</script>
