@@ -75,3 +75,20 @@ const { title, description, image = '/og-default.png' } = Astro.props;
   i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)
 })(window,document,"script","//bat.bing.com/bat.js","uetq");
 </script>
+
+<!-- Track Apex affiliate button clicks -->
+<script is:inline>
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href*="/go/apex"]');
+    if (!link) return;
+
+    // Fire UET custom event for affiliate click
+    if (window.uetq) {
+      window.uetq.push('event', 'apex_button_click', {
+        event_category: 'affiliate',
+        event_label: link.textContent.trim().slice(0, 50) || 'unknown',
+        page_path: window.location.pathname
+      });
+    }
+  });
+</script
