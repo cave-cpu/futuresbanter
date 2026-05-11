@@ -31,6 +31,15 @@ const { title, description, image = '/og-default.png' } = Astro.props;
 <meta name="generator" content={Astro.generator} />
 <meta name="google-site-verification" content="kS_pWJcdZKNN492GlptTIVJWUV1LDybSK-sT02fVC6o" />
 
+<!-- Google Analytics 4 -->
+<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KJG0RRFZ8E"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KJG0RRFZ8E');
+</script>
+
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
