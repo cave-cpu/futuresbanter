@@ -1,0 +1,165 @@
+---
+// src/components/ApexCTA.astro
+// Discount code display with click-to-copy + auto-copy on /go/apex link clicks.
+// The code block itself is clickable. Any /go/apex link click also copies.
+
+const DISCOUNT_CODE = "NNIPSQFO";
+---
+
+<button
+  type="button"
+  class="apex-code-block"
+  data-apex-copy
+  aria-label={`Copy discount code ${DISCOUNT_CODE}`}
+>
+  <span class="code-label">Discount code</span>
+  <span class="code-row">
+    <code class="code-value">{DISCOUNT_CODE}</code>
+    <svg class="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+    </svg>
+  </span>
+  <span class="code-hint">enter at checkout for the current Apex promotion</span>
+</button>
+
+<div class="apex-toast" data-apex-toast role="status" aria-live="polite">
+  <span class="toast-check">✓</span>
+  <span>Code <strong>{DISCOUNT_CODE}</strong> copied — paste at checkout</span>
+</div>
+
+<style>
+  .apex-code-block {
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface);
+    border: 2.5px solid var(--accent-bright);
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    margin: 1.25rem 0;
+    box-shadow: 0 6px 22px var(--accent-glow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .apex-code-block:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 26px var(--accent-glow);
+  }
+
+  .apex-code-block:active {
+    transform: translateY(0);
+    transition-duration: 0.05s;
+  }
+
+  .code-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .code-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .code-value {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-strong);
+    letter-spacing: 0.2em;
+    line-height: 1.1;
+  }
+
+  .copy-icon {
+    color: var(--accent);
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .apex-code-block:hover .copy-icon {
+    opacity: 1;
+  }
+
+  .code-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .apex-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(200%);
+    background: var(--surface);
+    border: 1px solid var(--accent-bright);
+    color: var(--text);
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    z-index: 1000;
+    transition: transform 0.35s ease;
+    pointer-events: none;
+    font-size: 0.95rem;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .apex-toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast-check {
+    color: var(--accent-bright);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+</style>
+
+<script>
+  async function copyApexCodeAndShowToast() {
+    const code = 'NNIPSQFO';
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = code;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+
+    const toast = document.querySelector('[data-apex-toast]');
+    if (toast) {
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+  }
+
+  // Triggers on either:
+  // 1. Click on any /go/apex link (auto-copy as user heads to Apex)
+  // 2. Click on the code block button (manual copy without leaving the page)
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href*="/go/apex"]');
+    const copyBtn = e.target.closest('[data-apex-copy]');
+    if (link || copyBtn) {
+      copyApexCodeAndShowToast();
+    }
+  });
+</script>

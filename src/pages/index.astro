@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
+import ApexCTA from '../components/ApexCTA.astro';
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -124,6 +125,7 @@ const posts = (await getCollection('blog'))
             <h3>Ready to trade real money?</h3>
 			<p>Apex funds disciplined futures traders with accounts up to $150K on new evaluations. If the calculators here made sense to you, you know what to do next.</p>
           </div>
+          <ApexCTA />
           <a href="/go/apex" class="btn-primary" target="_blank" rel="sponsored noopener">Start evaluation</a>
         </div>
       </section>
