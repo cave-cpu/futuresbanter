@@ -153,13 +153,21 @@ const DISCOUNT_CODE = "NNIPSQFO";
   }
 
   // Triggers on either:
-  // 1. Click on any /go/apex link (auto-copy as user heads to Apex)
-  // 2. Click on the code block button (manual copy without leaving the page)
+  // 1. Click on any /go/apex link (auto-copy + GA4 event as user heads to Apex)
+  // 2. Click on the code block button (manual copy, no conversion event)
   document.addEventListener('click', (e) => {
     const link = e.target.closest('a[href*="/go/apex"]');
     const copyBtn = e.target.closest('[data-apex-copy]');
+
+    // Fire GA4 conversion event only on the outbound click, not the copy button
+    if (link && typeof window.gtag === 'function') {
+      window.gtag('event', 'apex_outbound_click', {
+        click_source: 'cta_link',
+        page_path: window.location.pathname,
+      });
+    }
+
     if (link || copyBtn) {
       copyApexCodeAndShowToast();
     }
   });
-</script>
