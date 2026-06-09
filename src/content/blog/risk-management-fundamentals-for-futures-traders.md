@@ -142,4 +142,4 @@ Run the math before every trade. Use the [calculators](/tools/tick-pnl-calculato
 
 ---
 
-*If you trade prop firm accounts, risk management gets layered with rules like trailing drawdowns and consistency requirements. The Apex-specific math is in the [trailing drawdown explainer](/blog/apex-trailing-drawdown-explained).*
+*If you trade prop firm accounts, risk management gets layered with rules like trailing drawdowns and consistency requirements. The full breakdown is in the [trailing drawdown explainer](/blog/apex-trailing-drawdown-explained) and [consistency rule explainer](/blog/apex-consistency-rule-explained) — and if you're picking a firm, [Elite Trader Funding](/go/apex) is who we use.*

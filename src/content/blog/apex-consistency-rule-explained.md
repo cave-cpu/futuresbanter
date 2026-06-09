@@ -1,21 +1,21 @@
 ---
-title: "Apex Consistency Rule Explained: The 50% Rule and How to Stay Eligible for Payouts"
-description: "Apex's consistency rule blocks payouts when one trading day makes up too much of your total profit. Here's exactly how the 50% rule works, the math behind it, and how to plan trading days that keep you eligible."
+title: "The Consistency Rule Explained: How It Works and How to Stay Eligible for Payouts"
+description: "Most futures prop firms block payouts when one trading day makes up too much of your total profit. Here's exactly how the consistency rule works, the math behind it, and how to plan trading days that keep you eligible."
 pubDate: 'Apr 30 2026'
 heroImage: ''
 ---
 
-You can hit your profit target on an Apex PA, clear the Safety Net, and still get your payout request denied. The rule that blocks it is the **consistency rule**, and it surprises new traders almost every time.
+You can hit your profit target on a funded account, clear the Safety Net, and still get your payout request denied. The rule that blocks it is the **consistency rule**, and it surprises new traders almost every time.
 
-The mechanic is simple: no single trading day can make up too much of your total profit when you request a payout. The number that defines "too much" changed in March 2026 from 30% to 50%, which makes the rule significantly easier to live with — but only if you understand how it works.
+The mechanic is simple: no single trading day can make up too much of your total profit when you request a payout. What counts as "too much" varies by firm — commonly somewhere between 30% and 50% — so the first thing to do is confirm your firm's exact number. We'll use 50% as the running example here, because the math works the same whatever the threshold.
 
-This post is the explanation, with the math worked out and a quick reference for legacy 30% accounts at the end.
+This post is the explanation, with the math worked out and a quick reference for stricter 30% firms at the end.
 
 ## What the consistency rule actually checks
 
-When you request a payout, Apex looks at your profit history since your last approved payout (or since the account opened, if it's your first). For every day you've traded:
+When you request a payout, your firm looks at your profit history since your last approved payout (or since the account opened, if it's your first). For every day you've traded:
 
-> **No single day's profit can be more than 50% of your total profit at the time of the request.**
+> **No single day's profit can be more than your firm's limit (we'll use 50%) of your total profit at the time of the request.**
 
 That's the entire rule.
 
@@ -25,13 +25,13 @@ The rule resets after every approved payout. Each payout cycle is its own clean 
 
 ## Why this rule exists
 
-Apex's argument is that the rule is there to prove you're trading a real strategy, not getting lucky on one massive day and trying to cash out before reverting to losses. From their perspective, a trader who scores $5,000 on a single news event then immediately requests a payout looks like luck. A trader whose $5,000 profit was spread across ten $500 days looks like skill.
+The firm's argument is that the rule is there to prove you're trading a real strategy, not getting lucky on one massive day and trying to cash out before reverting to losses. From their perspective, a trader who scores $5,000 on a single news event then immediately requests a payout looks like luck. A trader whose $5,000 profit was spread across ten $500 days looks like skill.
 
 You don't have to agree with the philosophy to live with the rule. But it's worth knowing why it exists, because the way you fix a consistency violation is by trading the kind of days that the rule is trying to incentivize — smaller, more uniform profit days that dilute the big one.
 
 ## Worked example: passing and failing
 
-Let's walk through a $50K PA with two scenarios.
+Let's walk through a $50K account with two scenarios.
 
 ### Scenario A: Passes the consistency rule
 
@@ -73,13 +73,13 @@ Notice that both scenarios produce the same total profit. The difference is enti
 
 ## How to fix a consistency violation
 
-If you have a day that's over 50% of your total profit, you have two paths to get back into compliance:
+If you have a day that's over your firm's limit of your total profit, you have two paths to get back into compliance:
 
 ### Path 1: Trade more days to dilute the big day
 
-Keep trading. Add more profitable days. Each new day grows the denominator (total profit) without growing the numerator (your biggest day). Eventually the percentage drops below 50%.
+Keep trading. Add more profitable days. Each new day grows the denominator (total profit) without growing the numerator (your biggest day). Eventually the percentage drops below the threshold.
 
-The math: to dilute a biggest day of `X` to exactly 50%, you need a total profit of `2X`. To dilute it under 50% comfortably, aim for `2.2X` or higher.
+The math (for a 50% rule): to dilute a biggest day of `X` to exactly 50%, you need a total profit of `2X`. To dilute it under 50% comfortably, aim for `2.2X` or higher.
 
 In Scenario B above:
 
@@ -97,26 +97,26 @@ This isn't always possible (the timing depends on payout windows and account sta
 
 ## How to plan around the rule going forward
 
-If you're trading a PA and you know about the rule from day one, the strategic move is simple: **target a steady distribution from the start**.
+If you're trading a funded account and you know about the rule from day one, the strategic move is simple: **target a steady distribution from the start**.
 
 Some practical guardrails:
 
 - **Set a daily profit target you stop at.** If your account size suggests aiming for $3,000 over a payout cycle, that's roughly $300/day across 10 trading days, or $500/day across 6 days. Pick a daily cap and stop when you hit it. The cap doesn't have to be tight — just a number you don't blast through on green days.
 - **Treat unusually big days as a signal to pause, not double down.** If you happen to have a $1,500 day in an account where your typical day is $300, you've now created a consistency problem you'll have to work to fix. Trading bigger the next day to "build on momentum" usually creates a *bigger* day, which makes the percentage worse.
-- **Track your consistency percentage in real time.** Knowing where you stand each day prevents surprise denials. The [Consistency Checker](/tools/apex-consistency-checker) does this calculation for you — plug in your biggest day and total profit, and it tells you exactly where you stand.
+- **Track your consistency percentage in real time.** Knowing where you stand each day prevents surprise denials. The [Consistency Calculator](/tools/consistency-calculator) does this calculation for you — plug in your biggest day and total profit, and it tells you exactly where you stand.
 
-## A note for legacy account holders
+## A note for stricter (30%) firms
 
-Accounts purchased **before March 2026** still operate under the old 30% consistency rule. Same mechanic, stricter threshold:
+Some firms use a tighter **30% consistency rule** instead of 50%. Same mechanic, less room:
 
 > No single day's profit can be more than 30% of total profit at the time of the request.
 
 The math is the same, just less forgiving:
 
-- $1,000 biggest day on legacy 30% rule = need $3,333 minimum total profit to pass
-- Same $1,000 biggest day on current 50% rule = need $2,000 minimum total profit to pass
+- $1,000 biggest day on a 30% rule = need $3,333 minimum total profit to pass
+- Same $1,000 biggest day on a 50% rule = need $2,000 minimum total profit to pass
 
-If you bought your account in 2025 or earlier, this is your number. The Consistency Checker has a toggle for legacy accounts — make sure it's on the right setting before you trust the result.
+Confirm which number your firm uses before you plan a payout. The Consistency Calculator lets you set your own threshold — make sure it's on the right number before you trust the result.
 
 ## Consistency rule vs Safety Net rule — they're not the same thing
 
@@ -124,22 +124,22 @@ This trips traders up constantly because both involve thresholds for getting pai
 
 The **consistency rule** is about *how* your profit is distributed. The check happens at payout request time. Pass it by spreading your profit across multiple days.
 
-The **Safety Net rule for payouts** is about your *minimum account balance* at payout request time. For your first three payouts on a PA, your balance must be at or above your starting balance + drawdown + $100 (e.g., $52,600 on a $50K account). After three successful payouts, this requirement disappears.
+The **Safety Net rule for payouts** is about your *minimum account balance* at payout request time. Many firms require your balance to be at or above a threshold tied to your starting balance plus a buffer for your first several payouts, after which the requirement disappears. The exact threshold and the number of payouts it applies to vary by firm — check yours. We cover how the drawdown and safety net work in the [trailing drawdown explainer](/blog/apex-trailing-drawdown-explained).
 
-Both have to be true to get paid. Failing either one denies the payout. We'll cover the Safety Net rule and the full payout process in a separate post.
+Both have to be true to get paid. Failing either one denies the payout.
 
-For now, the simple summary: **clear the consistency check (50% rule), clear the Safety Net (balance threshold), and you can request a payout.**
+For now, the simple summary: **clear the consistency check, clear the Safety Net (balance threshold), and you can request a payout.**
 
 ## The takeaway
 
-The consistency rule isn't designed to trap traders. It's designed to filter for traders whose strategies actually scale across multiple days, not just lottery-ticket trades that happen to hit. Once you understand the math, planning around it becomes part of how you run a PA rather than a surprise that denies your first payout.
+The consistency rule isn't designed to trap traders. It's designed to filter for traders whose strategies actually scale across multiple days, not just lottery-ticket trades that happen to hit. Once you understand the math, planning around it becomes part of how you run a funded account rather than a surprise that denies your first payout.
 
 The two-line version of the rule:
 
-1. No single day can be more than 50% of your total profit since your last payout (or 30% on legacy accounts)
+1. No single day can be more than your firm's limit (commonly 30–50%) of your total profit since your last payout
 2. Fix violations by adding more profit days, not by manipulating the big day
 
-Run your numbers in the [Consistency Checker](/tools/apex-consistency-checker) before requesting a payout. It'll tell you in two seconds whether you're clear or how much profit you still need.
+If you're shopping for a firm to put these payouts to work on, [Elite Trader Funding](/go/apex) runs funded accounts from $10K to $250K. Run your numbers in the [Consistency Calculator](/tools/consistency-calculator) before requesting a payout — it'll tell you in two seconds whether you're clear or how much profit you still need.
 
 ---
 
