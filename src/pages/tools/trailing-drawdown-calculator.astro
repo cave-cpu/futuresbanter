@@ -1,0 +1,152 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ApexCTA from '../../components/ApexCTA.astro';
+import { SITE_TITLE, PROP_FIRMS, FEATURED_FIRM } from '../../consts';
+
+const firm = PROP_FIRMS[FEATURED_FIRM];
+const plan = firm.plans['1-step'];
+const sizes = plan.sizes;
+const buffer = firm.safetyNetBuffer;
+
+const pageTitle = `Trailing Drawdown Calculator — ${SITE_TITLE}`;
+const pageDescription = `Free trailing drawdown calculator. See where your drawdown floor sits and how much room you have left, configured for ${firm.name} ${plan.label} accounts.`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={pageTitle} description={pageDescription} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <section class="tdc">
+        <h1>Trailing Drawdown Calculator</h1>
+        <p class="tdc-sub">
+          See exactly where your trailing drawdown floor sits and how much room you have left.
+          Configured for {firm.name} {plan.label} accounts.
+        </p>
+
+        <div class="tdc-card">
+          <div class="tdc-field">
+            <label for="tdc-size">Account size</label>
+            <select id="tdc-size">
+              {sizes.map((s) => (
+                <option value={s.balance}>
+                  {`$${s.balance / 1000}K  ·  $${s.maxDrawdown.toLocaleString()} drawdown  ·  $${s.profitTarget.toLocaleString()} target`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div class="tdc-field">
+            <label for="tdc-peak">Highest balance you've reached ($)</label>
+            <input id="tdc-peak" type="number" inputmode="numeric" placeholder="e.g. 51500" />
+          </div>
+
+          <div class="tdc-field">
+            <label for="tdc-current">Your current balance ($)</label>
+            <input id="tdc-current" type="number" inputmode="numeric" placeholder="e.g. 50800" />
+          </div>
+        </div>
+
+        <div class="tdc-results" id="tdc-results"></div>
+
+        <div class="tdc-cta-wrap"><ApexCTA /></div>
+
+        <p class="tdc-note">
+          Rules current as of {firm.rulesLastChecked}. The drawdown trails your highest
+          unrealized profit; once your realized profit reaches your max drawdown + ${buffer},
+          the drawdown is removed and your floor locks permanently. Always confirm current
+          rules on the official {firm.name} site before trading.
+        </p>
+      </section>
+    </main>
+    <Footer />
+
+    <script define:vars={{ sizes, buffer }}>
+      const sizeEl = document.getElementById('tdc-size');
+      const peakEl = document.getElementById('tdc-peak');
+      const curEl = document.getElementById('tdc-current');
+      const out = document.getElementById('tdc-results');
+
+      const money = (n) => '$' + Math.round(n).toLocaleString();
+
+      function row(label, value, cls) {
+        return `<div class="tdc-row ${cls || ''}"><span>${label}</span><strong>${value}</strong></div>`;
+      }
+
+      function calc() {
+        const balance = Number(sizeEl.value);
+        const size = sizes.find((s) => s.balance === balance);
+        if (!size) return;
+
+        const dd = size.maxDrawdown;
+        const startFloor = balance - dd;
+        const lockedFloor = balance + buffer;
+        const safetyNetProfit = dd + buffer;
+
+        const peak = Number(peakEl.value) || balance;
+        const current = Number(curEl.value) || peak;
+
+        let floor = Math.min(peak - dd, lockedFloor);
+        if (floor < startFloor) floor = startFloor;
+
+        const room = current - floor;
+        const breached = room <= 0;
+
+        out.innerHTML =
+          row('Starting drawdown floor', money(startFloor)) +
+          row('Profit target to pass', money(size.profitTarget)) +
+          row('Your current floor', money(floor)) +
+          row(
+            breached ? 'Room left — BREACHED' : 'Room above your floor',
+            money(room),
+            breached ? 'tdc-bad' : 'tdc-good'
+          ) +
+          row('Profit to lock safety net', money(safetyNetProfit)) +
+          row('Floor after safety net locks', money(lockedFloor));
+      }
+
+      [sizeEl, peakEl, curEl].forEach((el) => {
+        el.addEventListener('input', calc);
+        el.addEventListener('change', calc);
+      });
+      calc();
+    </script>
+
+    <style is:global>
+        .tdc-cta-wrap { text-align: center; margin: 32px 0; }
+      .tdc { max-width: 680px; margin: 2.5rem auto; padding: 0 1rem; }
+      .tdc h1 { margin-bottom: 0.4rem; }
+      .tdc-sub { opacity: 0.8; margin-bottom: 1.5rem; }
+      .tdc-card {
+        display: grid; gap: 1rem; padding: 1.25rem;
+        border: 1px solid rgba(128,128,128,0.3); border-radius: 12px;
+      }
+      .tdc-field { display: grid; gap: 0.35rem; }
+      .tdc-field label { font-weight: 600; font-size: 0.9rem; }
+      .tdc-field select, .tdc-field input {
+        padding: 0.6rem 0.7rem; font-size: 1rem; width: 100%;
+        border: 1px solid rgba(128,128,128,0.4); border-radius: 8px;
+        background: transparent; color: inherit;
+      }
+      .tdc-results { margin: 1.5rem 0; display: grid; gap: 0.5rem; }
+      .tdc-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.6rem 0.8rem; border-radius: 8px;
+        background: rgba(128,128,128,0.08);
+      }
+      .tdc-row.tdc-good strong { color: #16a34a; }
+      .tdc-row.tdc-bad strong { color: #dc2626; }
+      .tdc-cta {
+        display: inline-block; margin-top: 0.5rem; padding: 0.75rem 1.25rem;
+        font-weight: 700; text-decoration: none; border-radius: 8px;
+        background: #2563eb; color: #fff;
+      }
+      .tdc-note { margin-top: 1.25rem; font-size: 0.8rem; opacity: 0.65; line-height: 1.5; }
+    </style>
+  </body>
+</html>

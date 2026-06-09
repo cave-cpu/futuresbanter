@@ -85,16 +85,22 @@ const { title, description, image = '/og-default.png' } = Astro.props;
     i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)
   })(window,document,"script","//bat.bing.com/bat.js","uetq");
 
-  // Track Apex affiliate button clicks as a custom UET event
-  document.addEventListener('click', function (e) {
-    var link = e.target.closest('a[href*="/go/apex"]');
-    if (!link) return;
-    if (window.uetq) {
-      window.uetq.push('event', 'apex_button_click', {
-        event_category: 'affiliate',
-        event_label: link.textContent.trim().slice(0, 50) || 'unknown',
-        page_path: window.location.pathname
-      });
-    }
-  });
+  // Track affiliate outbound clicks (UET + GA4) on /go/apex links, sitewide
+   document.addEventListener('click', function (e) {
+     var link = e.target.closest('a[href*="/go/apex"]');
+     if (!link) return;
+     if (window.uetq) {
+       window.uetq.push('event', 'apex_button_click', {
+         event_category: 'affiliate',
+         event_label: link.textContent.trim().slice(0, 50) || 'unknown',
+         page_path: window.location.pathname
+       });
+     }
+     if (typeof window.gtag === 'function') {
+       window.gtag('event', 'apex_outbound_click', {
+         click_source: 'cta_link',
+         page_path: window.location.pathname
+       });
+     }
+   });
 </script>

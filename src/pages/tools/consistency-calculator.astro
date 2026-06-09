@@ -1,0 +1,131 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ApexCTA from '../../components/ApexCTA.astro';
+import { SITE_TITLE, PROP_FIRMS, FEATURED_FIRM } from '../../consts';
+
+const firm = PROP_FIRMS[FEATURED_FIRM];
+const defaultLimit = firm.consistency.payoutMaxBestDayPct;
+const atd = firm.atd;
+
+const pageTitle = `Consistency Calculator — ${SITE_TITLE}`;
+const pageDescription = `Free prop firm consistency calculator. Check whether your best trading day is within the payout consistency limit, configured for ${firm.name}.`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={pageTitle} description={pageDescription} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <section class="cc">
+        <h1>Consistency Calculator</h1>
+        <p class="cc-sub">
+          Check whether your best day is within the payout consistency limit, and how much
+          more profit you'd need to pass. Configured for {firm.name}.
+        </p>
+
+        <div class="cc-card">
+          <div class="cc-field">
+            <label for="cc-total">Total profit so far ($)</label>
+            <input id="cc-total" type="number" inputmode="numeric" placeholder="e.g. 4000" />
+          </div>
+          <div class="cc-field">
+            <label for="cc-best">Your best single day ($)</label>
+            <input id="cc-best" type="number" inputmode="numeric" placeholder="e.g. 1800" />
+          </div>
+          <div class="cc-field">
+            <label for="cc-limit">Consistency limit (%)</label>
+            <input id="cc-limit" type="number" inputmode="numeric" value={defaultLimit} />
+          </div>
+        </div>
+
+        <div class="cc-results" id="cc-results"></div>
+
+        <div class="cc-cta-wrap"><ApexCTA /></div>
+
+        <p class="cc-note">
+          The consistency rule: your most profitable day can't exceed the limit shown, as a share
+          of total accumulated profit when you request a payout. You also need qualifying Active
+          Trading Days — each needs at least ${atd.minRealizedPerDay} realized and at least
+          {atd.minPctOfBestDay}% of your best day, with {atd.qualifiedDaysFirstPayout} for your
+          first payout. The exact limit varies by account type — confirm it on ETF's official
+          consistency calculator before relying on this.
+        </p>
+      </section>
+    </main>
+    <Footer />
+
+    <script>
+      const totalEl = document.getElementById('cc-total');
+      const bestEl = document.getElementById('cc-best');
+      const limitEl = document.getElementById('cc-limit');
+      const out = document.getElementById('cc-results');
+
+      const money = (n) => '$' + Math.round(n).toLocaleString();
+      const row = (l, v, cls) =>
+        `<div class="cc-row ${cls || ''}"><span>${l}</span><strong>${v}</strong></div>`;
+
+      function calc() {
+        const total = Number(totalEl.value) || 0;
+        const best = Number(bestEl.value) || 0;
+        const limit = Number(limitEl.value) || 0;
+        if (total <= 0 || best <= 0 || limit <= 0) { out.innerHTML = ''; return; }
+
+        const pct = (best / total) * 100;
+        const pass = pct <= limit;
+        const neededTotal = best / (limit / 100);
+        const moreNeeded = Math.max(0, neededTotal - total);
+
+        out.innerHTML =
+          row('Your best day as % of total', pct.toFixed(1) + '%', pass ? 'cc-good' : 'cc-bad') +
+          row('Consistency limit', limit + '%') +
+          row('Status', pass ? 'PASS — within the limit' : 'OVER the limit', pass ? 'cc-good' : 'cc-bad') +
+          (pass ? '' :
+            row('Total profit needed to pass', money(neededTotal)) +
+            row('More profit to trade', money(moreNeeded)));
+      }
+
+      [totalEl, bestEl, limitEl].forEach((el) => {
+        el.addEventListener('input', calc);
+        el.addEventListener('change', calc);
+      });
+      calc();
+    </script>
+
+    <style is:global>
+        .cc-cta-wrap { text-align: center; margin: 32px 0; }
+      .cc { max-width: 680px; margin: 2.5rem auto; padding: 0 1rem; }
+      .cc h1 { margin-bottom: 0.4rem; }
+      .cc-sub { opacity: 0.8; margin-bottom: 1.5rem; }
+      .cc-card {
+        display: grid; gap: 1rem; padding: 1.25rem;
+        border: 1px solid rgba(128,128,128,0.3); border-radius: 12px;
+      }
+      .cc-field { display: grid; gap: 0.35rem; }
+      .cc-field label { font-weight: 600; font-size: 0.9rem; }
+      .cc-field input {
+        padding: 0.6rem 0.7rem; font-size: 1rem; width: 100%;
+        border: 1px solid rgba(128,128,128,0.4); border-radius: 8px;
+        background: transparent; color: inherit;
+      }
+      .cc-results { margin: 1.5rem 0; display: grid; gap: 0.5rem; }
+      .cc-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.6rem 0.8rem; border-radius: 8px;
+        background: rgba(128,128,128,0.08);
+      }
+      .cc-row.cc-good strong { color: #16a34a; }
+      .cc-row.cc-bad strong { color: #dc2626; }
+      .cc-cta {
+        display: inline-block; margin-top: 0.5rem; padding: 0.75rem 1.25rem;
+        font-weight: 700; text-decoration: none; border-radius: 8px;
+        background: #2563eb; color: #fff;
+      }
+      .cc-note { margin-top: 1.25rem; font-size: 0.8rem; opacity: 0.65; line-height: 1.5; }
+    </style>
+  </body>
+</html>

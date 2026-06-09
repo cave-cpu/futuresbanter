@@ -1,7 +1,4 @@
 ---
-// Apex Trader Funding affiliate redirect
-// Visit: futuresbanter.com/go/apex
-// Updates here propagate to every "Start evaluation" button on the site
-
-return Astro.redirect('https://apextraderfunding.com/member/aff/go/nigelcave?c=NNIPSQFO&keyword=futuresbanter');
+import { AFFILIATE_URL } from '../../consts';
+return Astro.redirect(AFFILIATE_URL, 302);
 ---

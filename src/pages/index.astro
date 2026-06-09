@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
-import ApexCTA from '../components/ApexCTA.astro';
+import FundingCTA from '../components/FundingCTA.astro';
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -27,7 +27,7 @@ const posts = (await getCollection('blog'))
         <h1>Stop squinting at <em>support docs</em>.<br>Start trading with clarity.</h1>
         <p class="hero-sub">FuturesBanter builds tools and writes plain-English breakdowns for prop firm traders. No gurus, no fluff, no "exclusive" discount codes — just the stuff we wish existed when we started.</p>
         <div class="hero-ctas">
-          <a href="/tools/apex-drawdown-calculator" class="btn-primary">Try the Apex Calculator</a>
+          <a href="/tools/trailing-drawdown-calculator" class="btn-primary">Try the Drawdown Calculator</a>
           <a href="/blog" class="btn-secondary">Read the blog</a>
         </div>
       </section>
@@ -43,18 +43,18 @@ const posts = (await getCollection('blog'))
 
     <div class="tools-grid">
 
-      <a href="/tools/apex-drawdown-calculator" class="tool-card">
-        <div class="tool-tag">Apex</div>
-        <h3>Apex Drawdown Calculator</h3>
-        <p>See your real-time threshold, distance to Safety Net, and live cushion for both EOD and Intraday accounts. The first tool every Apex trader needs.</p>
+      <a href="/tools/trailing-drawdown-calculator" class="tool-card">
+        <div class="tool-tag">Prop</div>
+        <h3>Trailing Drawdown Calculator</h3>
+        <p>See exactly where your trailing drawdown floor sits and how much room you have left. Configured for Elite Trader Funding 1 Step accounts.</p>
         <span class="tool-cta">Open calculator →</span>
       </a>
 
-      <a href="/tools/apex-consistency-checker" class="tool-card">
-        <div class="tool-tag">Apex</div>
-        <h3>Apex Consistency Checker</h3>
-        <p>Can you actually request a payout right now? Check the 50% rule (or legacy 30%), Safety Net threshold, and minimum profit in one place. Updated for Apex 4.0.</p>
-        <span class="tool-cta">Open checker →</span>
+      <a href="/tools/consistency-calculator" class="tool-card">
+        <div class="tool-tag">Prop</div>
+        <h3>Consistency Calculator</h3>
+        <p>Can you request a payout right now? Check your best day against the consistency limit and see how much more profit you'd need to qualify. Configured for Elite Trader Funding.</p>
+        <span class="tool-cta">Open calculator →</span>
       </a>
 
       <a href="/tools/tick-pnl-calculator#pnl" class="tool-card">
@@ -116,19 +116,8 @@ const posts = (await getCollection('blog'))
         </section>
       )}
 
-      <!-- ============== APEX CTA ============== -->
-      <section class="container">
-        <div class="cta-card">
-          <div class="cta-icon">◆</div>
-          <div class="cta-body">
-            <div class="cta-eyebrow">Sponsored partner</div>
-            <h3>Ready to trade real money?</h3>
-			<p>Apex funds disciplined futures traders with accounts up to $150K on new evaluations. If the calculators here made sense to you, you know what to do next.</p>
-          </div>
-          <ApexCTA />
-          <a href="/go/apex" class="btn-primary" target="_blank" rel="sponsored noopener">Start evaluation</a>
-        </div>
-      </section>
+      <!-- ============== FUNDING CTA ============== -->
+     <FundingCTA />
 
     </main>
     <Footer />

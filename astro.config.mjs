@@ -7,6 +7,10 @@ import { defineConfig, fontProviders } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://futuresbanter.com',
+	redirects: {
+		'/tools/apex-drawdown-calculator': '/tools/trailing-drawdown-calculator',
+		'/tools/apex-consistency-checker': '/tools/consistency-calculator',
+	},
 	integrations: [
 	mdx(),
 	sitemap({
