@@ -1,6 +1,6 @@
 ---
-title: "The Consistency Rule Explained: How It Works and How to Stay Eligible for Payouts"
-description: "Most futures prop firms block payouts when one trading day makes up too much of your total profit. Here's exactly how the consistency rule works, the math behind it, and how to plan trading days that keep you eligible."
+title: "Prop Firm Consistency Rule Explained (With Examples)"
+description: "How the prop firm consistency rule works, the math behind the 30–50% limit, and how to spread your trading days so your payout isn't denied."
 pubDate: 'Apr 30 2026'
 heroImage: ''
 ---

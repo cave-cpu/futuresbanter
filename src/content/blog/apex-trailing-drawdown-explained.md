@@ -1,6 +1,6 @@
 ---
-title: "Trailing Drawdown Explained: What Actually Moves the Line"
-description: "How a trailing drawdown really works — the difference between end-of-day and intraday trailing, why unrealized profits matter, and what most traders get wrong before it costs them an account."
+title: "Trailing Drawdown Explained: Intraday vs EOD"
+description: "How trailing drawdown works on prop firm futures accounts: intraday vs end-of-day, why unrealized profit moves the line, and how to protect your cushion."
 pubDate: 'Apr 27 2026'
 heroImage: ''
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Risk Management Fundamentals for Futures Traders"
-description: "The math that actually keeps you in the game — 1% risk per trade, 2R minimum reward, position sizing for ES, NQ, CL, MNQ, and how to plan a trade before you take it."
+title: "Risk Management for Futures Traders: 4 Core Rules"
+description: "The math that keeps you in the game: 1% risk per trade, 2R minimum reward, and position sizing for ES, NQ, CL, and MNQ. Plan a trade before you take it."
 pubDate: 'Apr 27 2026'
 heroImage: ''
 ---

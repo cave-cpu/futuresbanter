@@ -1,6 +1,6 @@
 ---
-title: "The Four Emotional Pitfalls That End Trading Careers"
-description: "Revenge trading, FOMO, paralysis after losses, and overconfidence — the four emotional patterns that cost more trading accounts than any technical analysis mistake. Here's the psychology behind each one and what actually works to defuse them."
+title: "Trading Psychology: 4 Pitfalls That End Trading Careers"
+description: "Revenge trading, FOMO, paralysis, and overconfidence — the four trading-psychology pitfalls that cost more accounts than bad analysis, and the structural fixes."
 pubDate: 'May 30 2026'
 heroImage: ''
 ---
